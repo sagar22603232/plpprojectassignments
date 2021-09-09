@@ -14,6 +14,7 @@ public class CompilerComponentFactory extends CreateToken implements IPLPLexer {
 		StringLiteral("stringliteral"),
 		EscapeSeq("escapeseq"),
 		Comment("comment"),
+		HaveEqual("haveequal"),
 		WhiteSpace("whitespace");
 		
 		State(String stateName){
@@ -69,10 +70,85 @@ public class CompilerComponentFactory extends CreateToken implements IPLPLexer {
 						  indexPosition = indexPosition + 1;
 						  linePostion = linePostion + 1;
 					  }
+					  case '-' -> {
+						  tokens.add(new CreateToken(Kind.MINUS,startPosition,1,line,linePostion));
+						  indexPosition = indexPosition + 1;
+						  linePostion = linePostion + 1;
+					  }
+					  case '/' -> {
+						  tokens.add(new CreateToken(Kind.DIV,startPosition,1,line,linePostion));
+						  indexPosition = indexPosition + 1;
+						  linePostion = linePostion + 1;
+					  }
 					  case '*'->{
 						  tokens.add(new CreateToken(Kind.TIMES,startPosition,1,line,linePostion));
 						  indexPosition = indexPosition + 1;
 						  linePostion = linePostion + 1;	  
+					  }
+					  case '(' -> {
+						  tokens.add(new CreateToken(Kind.LPAREN,startPosition,1,line,linePostion));
+						  indexPosition = indexPosition + 1;
+						  linePostion = linePostion + 1;
+					  }
+					  case ')' -> {
+						  tokens.add(new CreateToken(Kind.RPAREN,startPosition,1,line,linePostion));
+						  indexPosition = indexPosition + 1;
+						  linePostion = linePostion + 1;
+					  }
+					  case';' -> {
+						  tokens.add(new CreateToken(Kind.SEMI,startPosition,1,line,linePostion));
+						  indexPosition = indexPosition + 1;
+						  linePostion = linePostion + 1;
+					  }
+					  case ','->{
+						  tokens.add(new CreateToken(Kind.COMMA,startPosition,1,line,linePostion));
+						  indexPosition = indexPosition + 1;
+						  linePostion = linePostion + 1;
+					  }
+					  case ':' ->{
+						  tokens.add(new CreateToken(Kind.COLON,startPosition,1,line,linePostion));
+						  indexPosition = indexPosition + 1;
+						  linePostion = linePostion + 1;
+					  }
+					  case '&' -> {
+						  tokens.add(new CreateToken(Kind.AND,startPosition,1,line,linePostion));
+						  indexPosition = indexPosition + 1;
+						  linePostion = linePostion + 1;
+					  }
+					  case '|' -> {
+						  tokens.add(new CreateToken(Kind.OR,startPosition,1,line,linePostion));
+						  indexPosition = indexPosition + 1;
+						  linePostion = linePostion + 1;
+					  }
+					  case '[' -> {
+						  tokens.add(new CreateToken(Kind.LSQUARE,startPosition,1,line,linePostion));
+						  indexPosition = indexPosition + 1;
+						  linePostion = linePostion + 1;
+					  }
+					  case ']' ->{
+						  tokens.add(new CreateToken(Kind.RSQUARE,startPosition,1,line,linePostion));
+						  indexPosition = indexPosition + 1;
+						  linePostion = linePostion + 1;
+					  }
+					  case '<' ->{
+						  tokens.add(new CreateToken(Kind.LT,startPosition,1,line,linePostion));
+						  indexPosition = indexPosition + 1;
+						  linePostion = linePostion + 1;
+					  }
+					  case '>' -> {
+						  tokens.add(new CreateToken(Kind.GT,startPosition,1,line,linePostion));
+						  indexPosition = indexPosition + 1;
+						  linePostion = linePostion + 1;
+					  }
+					  case '=' -> {
+						  state = State.HaveEqual;
+						  indexPosition = indexPosition + 1;
+						  linePostion = linePostion + 1;
+					  }
+					  case '0','1','2','3','4','5','6','7','8','9' -> {
+						  state = State.IntLiteral;
+						  indexPosition = indexPosition + 1;
+						  linePostion = linePostion + 1;
 					  }
 					  }
 				  }
