@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 class ExampleLexerTests implements PLPTokenKinds {
 
-	IPLPLexer getLexer(String input) {
+	IPLPLexer getLexer(String input) throws LexicalException {
 		return CompilerComponentFactory.getLexer(input);
 	}
 

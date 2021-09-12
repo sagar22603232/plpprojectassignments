@@ -8,7 +8,7 @@ public class CompilerComponentFactory extends CreateToken implements IPLPLexer {
 	static ArrayList<IPLPToken> tokens;
 	IPLPLexer lexer;
 	static HashMap<String,Kind> keyWords =new HashMap<String, Kind>();
-	
+	int tokenCount;
 	
 	
 	CompilerComponentFactory(String input){
@@ -59,8 +59,8 @@ public class CompilerComponentFactory extends CreateToken implements IPLPLexer {
 	}
 
 	
-	static IPLPLexer getLexer(String input) {
-		//TODO  create and return a Lexer instance to parse the given input.
+	static IPLPLexer getLexer(String input) throws LexicalException {
+		//TODO  create and return a  instance to parse the given input.
 		char [] chars = new char[input.length()];
 		 int inputLength = input.length();
 		 int indexPosition = 0;
@@ -79,7 +79,7 @@ public class CompilerComponentFactory extends CreateToken implements IPLPLexer {
 			  switch(state) {
 			  	case START -> {
 				  if(indexPosition < inputLength) {
-					  indexPosition = skipWhiteSpace(indexPosition, length);
+					  //indexPosition = skipWhiteSpace(indexPosition, length);
 					  charIndex = indexPosition  < inputLength?chars[indexPosition]:-1;
 					  startPosition = indexPosition;
 					  switch(charIndex) {
@@ -296,10 +296,10 @@ public class CompilerComponentFactory extends CreateToken implements IPLPLexer {
 	@Override
 	public IPLPToken nextToken() throws LexicalException {
 		// TODO Auto-generated method stub
-		if(tokenCount >= token.size()) {
+		if(tokenCount >= tokens.size()) {
 			return null;
 		}
-		return token.get(tokenCount++);
+		return tokens.get(tokenCount++);
 	}
 
 	
