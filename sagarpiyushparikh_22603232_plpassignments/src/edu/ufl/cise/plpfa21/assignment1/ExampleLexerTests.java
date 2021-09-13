@@ -14,9 +14,12 @@ class ExampleLexerTests implements PLPTokenKinds {
 	@Test
 	public void test0() throws LexicalException {
 		String input = """
-
+				
 				""";
+		System.out.print("input");
+		System.out.print(input);
 		IPLPLexer lexer = getLexer(input);
+		System.out.print(lexer);
 		{
 			IPLPToken token = lexer.nextToken();
 			Kind kind = token.getKind();
@@ -79,6 +82,7 @@ class ExampleLexerTests implements PLPTokenKinds {
 				a123 123a
 				""";
 		IPLPLexer lexer = getLexer(input);
+		System.out.println(lexer);
 		{
 			IPLPToken token = lexer.nextToken();
 			Kind kind = token.getKind();
@@ -212,5 +216,4 @@ class ExampleLexerTests implements PLPTokenKinds {
 			IPLPToken token = lexer.nextToken();
 		});
 	}
-
 }
