@@ -71,7 +71,12 @@ public CreateToken (Kind kind,int position_Index, int input_Length,int input_Lin
 	@Override
 	public int getIntValue() {
 		// TODO Auto-generated method stub
-		System.out.println(this.value);
-		return Integer.parseInt(this.value);
+		if(this.value == "1") {
+			return Integer.parseInt(this.text);
+		}
+		else {
+			return Integer.parseInt(this.text);
+		}
+		
 	}
 }
