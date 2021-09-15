@@ -75,6 +75,9 @@ public class CreateLexer extends CreateToken implements IPLPLexer, IPLPToken {
 		 int line = 1;
 		 int startPosition = 1;
 		 int startLinePostion = 0;
+		 int charcount = 0;
+		 int spacecount = 0;
+		 int linecount = 0;
 		  char EOFchar = 0;
 		  String albha = "";
 		  int charposition = 0;
@@ -126,7 +129,7 @@ public class CreateLexer extends CreateToken implements IPLPLexer, IPLPToken {
 							  System.out.println("linne 128");
 							  indexPosition = indexPosition + 1;
 							  startLinePostion = startLinePostion + 1;
-							  
+							  linecount = linecount +1;
 							  linePostion = linePostion + 1;
 							  System.out.println("linne 131");
 							  System.out.println(linePostion);
@@ -210,7 +213,8 @@ public class CreateLexer extends CreateToken implements IPLPLexer, IPLPToken {
 							  state = State.HaveEqual;
 							  charposition = indexPosition;
 							  indexPosition = indexPosition + 1;
-							  startLinePostion = startLinePostion + 1;
+							  
+							  //startLinePostion = startLinePostion + 1;
 						  }
 						  case '0','1','2','3','4','5','6','7','8','9' -> {
 							  state = State.IntLiteral;
@@ -263,8 +267,10 @@ public class CreateLexer extends CreateToken implements IPLPLexer, IPLPToken {
 				  			else {
 				  				System.out.println(" line 259");
 				  				System.out.println(input.charAt(charposition));
-				  				
+				  				spacecount = charposition - charcount; 
 				  				startLinePostion = charposition;
+				  				System.out.println(" line 271------------------------------");
+				  				System.out.println(spacecount);
 				  				while(charposition <= indexPosition ) {
 				  					if(Character.isJavaIdentifierStart(input.charAt(charposition))) {
 					  					System.out.println(" line 2");
@@ -275,17 +281,18 @@ public class CreateLexer extends CreateToken implements IPLPLexer, IPLPToken {
 				  					charposition = charposition + 1;
 				  									  					
 				  				}
-				  				tokens.add(new CreateToken(Kind.IDENTIFIER,indexPosition,inputLength,linePostion,startLinePostion,input.charAt(charposition),input.charAt(charposition), albha));
+				  				tokens.add(new CreateToken(Kind.IDENTIFIER,indexPosition,inputLength,linePostion,spacecount,input.charAt(charposition),input.charAt(charposition), albha));
 				  			}
 				  			albha = "";
 				  			startLinePostion = startLinePostion + 1 ;
-
+				  			charcount = charposition;
+				  			linecount = 0;
 				  			state = State.START;
 				  			chdict.setLength(0);
 				  		}
 				  	}
 				  	case IntLiteral -> {
-				  		try {
+				  		
 				  			boolean digitflag = checkDigit(input);
 				  			if(digitflag) {
 					  			if(Integer.parseInt(input) < Integer.MAX_VALUE) {
@@ -311,7 +318,7 @@ public class CreateLexer extends CreateToken implements IPLPLexer, IPLPToken {
 					  			}
 					  			else {
 					  				LexicalException lexicalexception = new LexicalException("Error in character insert", line,linePostion );
-									 throw lexicalexception;
+							 throw lexicalexception;
 					  			}	
 				  			}
 				  			else {
@@ -321,30 +328,30 @@ public class CreateLexer extends CreateToken implements IPLPLexer, IPLPToken {
 						  			startLinePostion = startLinePostion + 1;  
 						  		}
 						  		else {
-						  			try
-						  			{
+//						  			try
+//						  			{
 						  				Integer.parseInt(chdict.toString());
 						  				tokens.add(new CreateToken(Kind.INT_LITERAL,indexPosition,inputLength,linePostion,startLinePostion,charIndex,charIndex,albha));
-						  			}
-						  			catch(Exception error) {
-										  LexicalException lexicalexception = new LexicalException("Error in character insert", line,linePostion );
-										 throw lexicalexception;
-						  			}
+						  			
+//						  			catch(Exception error) {
+//										  LexicalException lexicalexception = new LexicalException("Error in character insert", line,linePostion );
+//										 throw lexicalexception;
+//						  			}
 						  			state = State.START;
 						  			chdict.setLength(0);
 						  		}
 
 				  			}
 				  			
-				  		}catch(Exception error) {
-				  			LexicalException lexicalexception = new LexicalException("Error in character insert", line,linePostion );
-							 throw lexicalexception;
-				  		}
-				  	}
+//				  		}catch(Exception error) {
+//				  			LexicalException lexicalexception = new LexicalException("Error in character insert", line,linePostion );
+//							 throw lexicalexception;
+//				  		}
+				  	} 
 				  	case HaveEqual ->{
 				  		if(((input.charAt(indexPosition)) == '=')){
 				  			System.out.println("line 328");
-							  tokens.add(new CreateToken(Kind.EQUALS,indexPosition,inputLength,linePostion,startLinePostion,input.charAt(indexPosition),input.charAt(indexPosition),albha));
+							  tokens.add(new CreateToken(Kind.EQUALS,indexPosition,inputLength,linePostion,charposition,input.charAt(indexPosition),input.charAt(indexPosition),"=="));
 							  indexPosition = indexPosition + 1;
 							  startLinePostion = startLinePostion + 1; 
 							  state = State.START;
@@ -352,7 +359,7 @@ public class CreateLexer extends CreateToken implements IPLPLexer, IPLPToken {
 				  		else {
 				  			System.out.println("line 297");
 				  			System.out.println(input.charAt(indexPosition - 1));
-				  			tokens.add(new CreateToken(Kind.ASSIGN,indexPosition,inputLength,linePostion,startLinePostion,input.charAt(indexPosition),input.charAt(indexPosition),albha));
+				  			tokens.add(new CreateToken(Kind.ASSIGN,indexPosition,inputLength,linePostion,charposition,'=','=',albha));
 				  			indexPosition = indexPosition + 1;
 				  			startLinePostion = startLinePostion + 1;
 							  state = State.START;
@@ -403,6 +410,12 @@ public class CreateLexer extends CreateToken implements IPLPLexer, IPLPToken {
 		  catch (StringIndexOutOfBoundsException e) {
 			  tokens.add(new CreateToken(Kind.EOF,indexPosition,inputLength,linePostion,startLinePostion,charIndex,charIndex,albha));
 			  System.out.println("line 346");
+		      }
+		  catch (NumberFormatException e) {
+			 
+			  System.out.println("line 346 -----------------");
+				LexicalException lexicalexception = new LexicalException("Error in character insert", line,linePostion );
+				 throw lexicalexception;
 		      }
 		  catch(LexicalException error) {
 			 

@@ -18,6 +18,12 @@ public class CompilerComponentFactory extends CreateLexer implements IPLPLexer  
 			CompilerComponentFactory lexer = new CompilerComponentFactory(input);
 			tokens = lexer.CreateLexerTokens(input);
 			System.out.println("-----------------------");
+			for(CreateToken i: tokens) {
+				System.out.println(i.kind);
+				System.out.println(i.input_Line);
+				System.out.println(i.posInLine);
+				System.out.println(i.text);
+			}
 //			System.out.println(tokens.size());
 //			System.out.println(tokens.get(0).kind);
 //			System.out.println(tokens.get(0).input_Line);
