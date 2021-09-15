@@ -13,16 +13,21 @@ CreateToken(String input){
 	this.input = input;
 	this.input_Length = input.length();
 }
-public CreateToken (Kind kind,int position_Index, int input_Length,int input_Line, int posInLine, char inputChar, char numChar){
+public CreateToken (Kind kind,int position_Index, int input_Length,int input_Line, int posInLine, char inputChar, char numChar,  String albha){
 	this.kind = kind;
 	this.position_Index = position_Index;
 	this.input_Length = input_Length;
 	this.input_Line = input_Line;
 	this.posInLine = posInLine;
-	this.text = Character.toString(inputChar);
+	if(albha.length() > 0) {
+		this.text = albha;
+	}
+	else {
+		this.text = Character.toString(inputChar);
+	}
+	
 	this.value = Character.toString(numChar);
-	System.out.println("line 24 token");
-	System.out.println(this.text);
+
 }
 
 
@@ -36,17 +41,15 @@ public CreateToken (Kind kind,int position_Index, int input_Length,int input_Lin
 	@Override
 	public String getText() {
 		// TODO Auto-generated method stub
-		if(this.input != null) {
-			if(this.input.substring(position_Index, position_Index+input_Length).length() > 0) {
-				return this.input.substring(position_Index, position_Index+input_Length);
-			}	
-		}
-		return null;
+		return this.text;
+	
 	}
 
 	@Override
 	public int getLine() {
 		// TODO Auto-generated method stub
+		System.out.println("line");
+		System.out.println(this.input_Line);
 		return this.input_Line;
 	}
 
