@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import edu.ufl.cise.plpfa21.assignment1.PLPTokenKinds.Kind;
-
+/* @CreateLexer this class implements interface IPLPToken
+ * this class is used to create lexer token list
+ * */
 public class CreateLexer extends CreateToken implements  IPLPToken {
 
 
@@ -43,7 +45,8 @@ public class CreateLexer extends CreateToken implements  IPLPToken {
 		// TODO Auto-generated constructor stub
 	}
 
-	
+	/*This @State Function is used to define states of DFA
+	 * */
 	
 	public static enum State{
 		START("start"), 
@@ -65,7 +68,11 @@ public class CreateLexer extends CreateToken implements  IPLPToken {
 			return stateName;
 		}
 	}
-	
+	/*This return type int @removeSpaces Function is used to remove spaces
+	 * @indexPostion position of current index
+	 * @inputLength length of string
+	 * @input string provided by user
+	 * */
 	public static int removeSpaces(int indexPostion,int inputLength,String input) {
 		while(Character.isWhitespace(input.charAt(indexPostion))) {
 			if(input.charAt(indexPostion) == '\r' || input.charAt(indexPostion) == '\n') {
@@ -81,7 +88,7 @@ public class CreateLexer extends CreateToken implements  IPLPToken {
 		return indexPostion;
 	}
 	
-	/*This @CreateLexerTokens Function is used to  tokenlist 
+	/*This @CreateLexerTokens Function is used to create tokenlist of lexer tokens
 	 * @input string passed from junit testcases
 	 * */
 	

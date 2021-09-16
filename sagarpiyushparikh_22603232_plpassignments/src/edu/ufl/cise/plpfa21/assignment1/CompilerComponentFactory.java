@@ -12,6 +12,10 @@ public class CompilerComponentFactory extends CreateLexer implements IPLPLexer  
 		
 		// TODO Auto-generated constructor stub
 	}
+	/*This @getLexer Function is used to return tokenlist 
+	 * @input string passed from junit testcases
+	 * */
+	
 	static IPLPLexer getLexer(String input) throws LexicalException {
 		//TODO  create and return a  instance to parse the given input
 	
@@ -34,11 +38,14 @@ public class CompilerComponentFactory extends CreateLexer implements IPLPLexer  
 		
 
 	}
+	/*This @nextToken Function is used to return single token 
+	 * */
+	
 	@Override
 	public IPLPToken nextToken() throws LexicalException {
 		// TODO Auto-generated method stub
 	
-		int a = 100;
+		
 		//tokens.remove(tokens.size());
 	
 		

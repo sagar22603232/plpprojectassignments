@@ -1,5 +1,7 @@
 package edu.ufl.cise.plpfa21.assignment1;
-
+/* @CreateToken this class implements interface IPLPToken
+ * this class is used to create single tokens
+ * */
 public class CreateToken  implements IPLPToken {
 Kind kind;
 int position_Index = 0;
@@ -13,6 +15,16 @@ CreateToken(String input){
 	this.input = input;
 	this.input_Length = input.length();
 }
+/* @CreateToken this function implements
+ * @kind specify the kind of token
+ * @position_Index index of character
+ * @input_Length length of input
+ * @posInLine getCharPositionInLine of token
+ * @inputChar input character
+ * @numChar input number character
+ * @albha token text
+ * this class is used to create single tokens
+ * */
 public CreateToken (Kind kind,int position_Index, int input_Length,int input_Line, int posInLine, char inputChar, char numChar,  String albha){
 	this.kind = kind;
 	this.position_Index = position_Index;
