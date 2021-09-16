@@ -254,5 +254,21 @@ class ExampleLexerTests implements PLPTokenKinds {
 			assertEquals(kind, Kind.MINUS);
 		}
 	}
+	@Test
+	public void test8() throws LexicalException {
+		String input = """
+				'name'
+				""";
+		System.out.print("input");
+		System.out.print(input);
+		IPLPLexer lexer = getLexer(input);
+		System.out.print(lexer);
+		{
+			IPLPToken token = lexer.nextToken();
+			Kind kind = token.getKind();
+			assertEquals(kind, Kind.STRING_LITERAL);
+		}
+		
+	}
 
 }

@@ -236,6 +236,13 @@ public class CreateLexer extends CreateToken implements  IPLPToken {
 								  indexPosition = indexPosition + 1;
 								  startLinePostion = startLinePostion + 1;
 							  }
+							  case '\'','\"' -> {
+								  state = State.StringLiteral;
+								  
+								  indexPosition = indexPosition + 1;
+								  charposition = indexPosition;
+								  startLinePostion = startLinePostion + 1;
+							  }
 							  case '=' -> {
 								  state = State.HaveEqual;
 								  charposition = indexPosition;
@@ -407,6 +414,25 @@ public class CreateLexer extends CreateToken implements  IPLPToken {
 					  			startLinePostion = startLinePostion + 1;
 								  state = State.START;
 					  		}
+					  	}
+					  	case StringLiteral -> {
+					  		while(charposition <= givenInput.length()) {
+					  			if(givenInput.charAt(charposition) == '\'' || givenInput.charAt(charposition) == '\"') {
+					  				break;
+					  			}
+					  			else {
+					  				albha = albha + Character.toString(givenInput.charAt(charposition));
+				  					charposition = charposition + 1;
+					  			}
+					  		}
+		  					indexPosition = charposition;
+			  				tokens.add(new CreateToken(Kind.STRING_LITERAL,indexPosition,inputLength,linePostion,spacecount,input.charAt(charposition),input.charAt(charposition), albha));
+			  				albha = "";
+				  			startLinePostion = startLinePostion + 1 ;
+				  			charcount = charposition;
+				  			linecount = 0;
+				  			state = State.START;
+				  			chdict.setLength(0);
 					  	}
 					  	case Comment->
 					  	{
