@@ -188,20 +188,21 @@ class ExampleLexerTests implements PLPTokenKinds {
 		String input = """
 				a %
 				""";
-		IPLPLexer lexer = getLexer(input);
-		{
-			IPLPToken token = lexer.nextToken();
-			Kind kind = token.getKind();
-			assertEquals(kind, Kind.IDENTIFIER);
-			int line = token.getLine();
-			//assertEquals(line, 1);
-			int charPositionInLine = token.getCharPositionInLine();
-			assertEquals(charPositionInLine, 0);
-			String text = token.getStringValue();
-			assertEquals(text, "a");
-		}
+		
 		assertThrows(LexicalException.class, () -> {
 			@SuppressWarnings("unused")
+			IPLPLexer lexer = getLexer(input);
+			{
+				IPLPToken token = lexer.nextToken();
+				Kind kind = token.getKind();
+				assertEquals(kind, Kind.IDENTIFIER);
+				int line = token.getLine();
+				//assertEquals(line, 1);
+				int charPositionInLine = token.getCharPositionInLine();
+				assertEquals(charPositionInLine, 0);
+				String text = token.getStringValue();
+				assertEquals(text, "a");
+			}
 			IPLPToken token = lexer.nextToken();
 		});
 	}
@@ -211,10 +212,47 @@ class ExampleLexerTests implements PLPTokenKinds {
 		String input = """
 				99999999999999999999999999999999999999999999999999999999999999999999999
 				""";
-		IPLPLexer lexer = getLexer(input);
+		
 		assertThrows(LexicalException.class, () -> {
 			@SuppressWarnings("unused")
+			IPLPLexer lexer = getLexer(input);
 			IPLPToken token = lexer.nextToken();
 		});
 	}
+	@Test
+	public void test6() throws LexicalException {
+		String input = """
+				case
+				""";
+		System.out.print("input");
+		System.out.print(input);
+		IPLPLexer lexer = getLexer(input);
+		System.out.print(lexer);
+		{
+			IPLPToken token = lexer.nextToken();
+			Kind kind = token.getKind();
+			assertEquals(kind, Kind.KW_CASE);
+		}
+	}
+	@Test
+	public void test7() throws LexicalException {
+		String input = """
+				+-
+				""";
+		System.out.print("input");
+		System.out.print(input);
+		IPLPLexer lexer = getLexer(input);
+		System.out.print(lexer);
+		{
+			IPLPToken token = lexer.nextToken();
+			Kind kind = token.getKind();
+			assertEquals(kind, Kind.PLUS);
+		}
+		{
+			IPLPToken token = lexer.nextToken();
+			Kind kind = token.getKind();
+			assertEquals(kind, Kind.MINUS);
+		}
+	}
+
 }

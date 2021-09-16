@@ -18,6 +18,28 @@ public class CreateLexer extends CreateToken implements  IPLPToken {
 	CreateLexer(String input) {
 		super(input);
 		 tokens  = new ArrayList<CreateToken>();
+		 keyWords.put("integer", kind.KW_INT);
+			keyWords.put("boolean", kind.KW_BOOLEAN);
+			keyWords.put("case", kind.KW_CASE);
+			keyWords.put("default", kind.KW_DEFAULT);
+			keyWords.put("do", kind.KW_DO);
+			keyWords.put("else", kind.KW_ELSE);
+			keyWords.put("end", kind.KW_END);
+			keyWords.put("false", kind.KW_FALSE);
+			keyWords.put("float", kind.KW_FLOAT);
+			keyWords.put("fun", kind.KW_FUN);
+			keyWords.put("if", kind.KW_IF);
+			keyWords.put("let", kind.KW_LET);
+			keyWords.put("list", kind.KW_LIST);
+			keyWords.put("nil", kind.KW_NIL);
+			keyWords.put("return", kind.KW_RETURN);
+			keyWords.put("string", kind.KW_STRING);
+			keyWords.put("switch", kind.KW_SWITCH);
+			keyWords.put("true", kind.KW_TRUE);
+			keyWords.put("val", kind.KW_VAL);
+			keyWords.put("var", kind.KW_VAR);
+			keyWords.put("while", kind.KW_WHILE);
+
 		// TODO Auto-generated constructor stub
 	}
 
@@ -58,19 +80,11 @@ public class CreateLexer extends CreateToken implements  IPLPToken {
 		}
 		return indexPostion;
 	}
-	public boolean checkDigit(String input) {
-		try {
-			if(Integer.parseInt(input) < Integer.MAX_VALUE) {
-				return true;	
-			}
-			else {
-				return false;
-			}
-		}catch(Exception e) {
-			return false;
-			
-		}
-	}
+	
+	/*This @CreateLexerTokens Function is used to  tokenlist 
+	 * @input string passed from junit testcases
+	 * */
+	
 	public ArrayList<CreateToken> CreateLexerTokens (String input) throws LexicalException {
 		try {
 			int inputLength = input.length();
@@ -241,11 +255,7 @@ public class CreateLexer extends CreateToken implements  IPLPToken {
 //									  linePostion = linePostion + 1;
 								 }
 								 else {
-//									  LexicalException lexicalexception = new LexicalException("Error in character insert", line,linePostion );
-									 state = state.START;
-									 indexPosition = indexPosition + 1;
-									 startLinePostion = startLinePostion + 1;
-									  break;
+								 throw new LexicalException("Error in character insert", 0,1 );
 									 
 								 }
 							 }
@@ -311,8 +321,15 @@ public class CreateLexer extends CreateToken implements  IPLPToken {
 					  					
 					  									  					
 					  				}
-					  				indexPosition = charposition;
-					  				tokens.add(new CreateToken(Kind.IDENTIFIER,indexPosition,inputLength,linePostion,spacecount,input.charAt(charposition),input.charAt(charposition), albha));
+					  				if(keyWords.containsKey(albha)) {
+					  					indexPosition = charposition;
+						  				tokens.add(new CreateToken(keyWords.get(albha),indexPosition,inputLength,linePostion,spacecount,input.charAt(charposition),input.charAt(charposition), albha));
+					  				}
+					  				else {
+					  					indexPosition = charposition;
+						  				tokens.add(new CreateToken(Kind.IDENTIFIER,indexPosition,inputLength,linePostion,spacecount,input.charAt(charposition),input.charAt(charposition), albha));
+					  				}
+					  				
 					  			}
 					  			albha = "";
 					  			startLinePostion = startLinePostion + 1 ;
@@ -323,35 +340,7 @@ public class CreateLexer extends CreateToken implements  IPLPToken {
 					  		}
 					  	}
 					  	case IntLiteral -> {
-					  		
-					  			boolean digitflag = checkDigit(input);
-					  			System.out.println("line 297------------------------");
-					  			System.out.println(digitflag);
-					  			if(digitflag) {
-						  				
-							  			if(Character.isDigit(input.charAt(indexPosition))) {
-								  			chdict.append(Character.getNumericValue(input.charAt(indexPosition)));
-								  			 indexPosition = indexPosition + 1;
-								  			startLinePostion = startLinePostion + 1;  
-								  		}
-								  		else {
-								  			
-								  				Integer.parseInt(chdict.toString());
-								  				tokens.add(new CreateToken(Kind.INT_LITERAL,indexPosition,inputLength,linePostion,startLinePostion,charIndex,charIndex,albha));
-								  			
-								  			state = State.START;
-								  			chdict.setLength(0);
-								  		}
-						  			
-						  		
-					  			}
-					  			else {
-//					  				if(linecount > 0) {
-//					  					spacecount = charposition - charcount - linecount;	
-//					  				}
-//					  				else {
-//					  					spacecount = charposition - charcount;
-//					  				}
+					  		try {
 					  				spacecount = charposition;
 					  				startLinePostion = charposition;
 					  				System.out.println(" line 271------------------------------");
@@ -376,7 +365,11 @@ public class CreateLexer extends CreateToken implements  IPLPToken {
 					  									  					
 					  				}
 					  				indexPosition = charposition;
-					  				tokens.add(new CreateToken(Kind.INT_LITERAL,indexPosition,inputLength,linePostion,spacecount,input.charAt(charposition),'1', albha));
+					  				int valuedigit = Integer.parseInt(albha);
+					  				if(valuedigit < Integer.MAX_VALUE) {
+					  					tokens.add(new CreateToken(Kind.INT_LITERAL,indexPosition,inputLength,linePostion,spacecount,input.charAt(charposition),'1', albha));
+					  				}
+					  				
 					  			
 					  			albha = "";
 					  			startLinePostion = startLinePostion + 1 ;
@@ -387,8 +380,9 @@ public class CreateLexer extends CreateToken implements  IPLPToken {
 							  		
 //
 //					  			}throw new LexicalException("Error in character insert", line,linePostion );
-					  			}
-					  		
+					  		}catch(Exception e) {
+					  			throw new LexicalException("Error in character insert", 0,1 );
+					  		}
 					  	} 
 					  	case HaveEqual ->{
 					  		if(((input.charAt(indexPosition)) == '=')){

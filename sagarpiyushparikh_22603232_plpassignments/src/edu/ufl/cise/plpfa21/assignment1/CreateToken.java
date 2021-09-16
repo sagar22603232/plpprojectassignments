@@ -48,8 +48,7 @@ public CreateToken (Kind kind,int position_Index, int input_Length,int input_Lin
 	@Override
 	public int getLine() {
 		// TODO Auto-generated method stub
-		System.out.println("line");
-		System.out.println(this.input_Line);
+
 		return this.input_Line;
 	}
 
@@ -63,8 +62,7 @@ public CreateToken (Kind kind,int position_Index, int input_Length,int input_Lin
 	@Override
 	public String getStringValue() {
 		// TODO Auto-generated method stub
-		System.out.println("text");
-		System.out.println(this.text);
+
 		return this.text;
 	}
 
