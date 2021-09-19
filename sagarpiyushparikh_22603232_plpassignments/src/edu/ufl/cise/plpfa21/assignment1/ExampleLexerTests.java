@@ -188,21 +188,20 @@ class ExampleLexerTests implements PLPTokenKinds {
 		String input = """
 				a %
 				""";
-		
+		IPLPLexer lexer = getLexer(input);
+		{
+			IPLPToken token = lexer.nextToken();
+			Kind kind = token.getKind();
+			assertEquals(kind, Kind.IDENTIFIER);
+			int line = token.getLine();
+			assertEquals(line, 1);
+			int charPositionInLine = token.getCharPositionInLine();
+			assertEquals(charPositionInLine, 0);
+			String text = token.getText();
+			assertEquals(text, "a");
+		}
 		assertThrows(LexicalException.class, () -> {
 			@SuppressWarnings("unused")
-			IPLPLexer lexer = getLexer(input);
-			{
-				IPLPToken token = lexer.nextToken();
-				Kind kind = token.getKind();
-				assertEquals(kind, Kind.IDENTIFIER);
-				int line = token.getLine();
-				//assertEquals(line, 1);
-				int charPositionInLine = token.getCharPositionInLine();
-				assertEquals(charPositionInLine, 0);
-				String text = token.getStringValue();
-				assertEquals(text, "a");
-			}
 			IPLPToken token = lexer.nextToken();
 		});
 	}
@@ -212,10 +211,9 @@ class ExampleLexerTests implements PLPTokenKinds {
 		String input = """
 				99999999999999999999999999999999999999999999999999999999999999999999999
 				""";
-		
+		IPLPLexer lexer = getLexer(input);
 		assertThrows(LexicalException.class, () -> {
 			@SuppressWarnings("unused")
-			IPLPLexer lexer = getLexer(input);
 			IPLPToken token = lexer.nextToken();
 		});
 	}

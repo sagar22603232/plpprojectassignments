@@ -93,7 +93,7 @@ public class CreateLexer extends CreateToken implements  IPLPToken {
 	 * */
 	
 	public ArrayList<CreateToken> CreateLexerTokens (String input) throws LexicalException {
-		try {
+		
 			int inputLength = input.length();
 			String givenInput = input;
 			 int indexPosition = 0;
@@ -269,7 +269,12 @@ public class CreateLexer extends CreateToken implements  IPLPToken {
 //									  linePostion = linePostion + 1;
 								 }
 								 else {
-								 throw new LexicalException("Error in character insert", 0,1 );
+									 System.out.println("----------exception calls-------------");
+										System.out.println("-----------------------");
+										tokens.add(new CreateToken(Kind.ERROR,indexPosition,inputLength,linePostion,startLinePostion,charIndex,charIndex,albha));
+										  System.out.println("line 346");
+										  indexPosition = indexPosition +1;
+										  break;
 									 
 								 }
 							 }
@@ -395,7 +400,10 @@ public class CreateLexer extends CreateToken implements  IPLPToken {
 //
 //					  			}throw new LexicalException("Error in character insert", line,linePostion );
 					  		}catch(Exception e) {
-					  			throw new LexicalException("Error in character insert", 0,1 );
+					  			tokens.add(new CreateToken(Kind.ERROR,indexPosition,inputLength,linePostion,startLinePostion,charIndex,charIndex,albha));
+					  			indexPosition = indexPosition +1;
+					  			break;
+								  
 					  		}
 					  	} 
 					  	case HaveEqual ->{
@@ -480,18 +488,8 @@ public class CreateLexer extends CreateToken implements  IPLPToken {
 				  tokens.add(new CreateToken(Kind.EOF,indexPosition,inputLength,linePostion,startLinePostion,charIndex,charIndex,albha));
 				  System.out.println("line 346");
 			      }
-			
-			  catch(Exception error) {
-				 
-				throw error;
-				
-			  }
 			  return tokens;	
-		}catch(Exception error) {
-			 
-			throw error;
-			
-		  }
+		
 	}
 	
 	

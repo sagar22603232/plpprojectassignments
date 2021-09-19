@@ -7,6 +7,7 @@ import edu.ufl.cise.plpfa21.assignment1.PLPTokenKinds.Kind;
 
 public class CompilerComponentFactory extends CreateLexer implements IPLPLexer  {
 	static ArrayList<CreateToken> tokens;
+	static IPLPLexer singletoken;
 	CompilerComponentFactory(String input) {
 		super(input);
 		
@@ -16,22 +17,21 @@ public class CompilerComponentFactory extends CreateLexer implements IPLPLexer  
 	 * @input string passed from junit testcases
 	 * */
 	
-	static IPLPLexer getLexer(String input) throws LexicalException {
+	static IPLPLexer getLexer(String input){
 		//TODO  create and return a  instance to parse the given input
 	
 		CompilerComponentFactory lexer = new CompilerComponentFactory(input);
-		tokens = lexer.CreateLexerTokens(input);
-		System.out.println("-----------------------");
-		for(CreateToken i: tokens) {
-			System.out.println(i.kind);
-			System.out.println(i.input_Line);
-			System.out.println(i.posInLine);
-			System.out.println(i.text);
+		try {
+			tokens = lexer.CreateLexerTokens(input);
+			
+			singletoken  = lexer;
+		} catch (LexicalException e) {
+			// TODO Auto-generated catch block
+			return lexer;
 		}
-		System.out.println("----------return calls-------------");
-		System.out.println("-----------------------");
-		IPLPLexer singletoken  = lexer;
+
 		return singletoken; 
+
 	
 
 		
@@ -40,19 +40,27 @@ public class CompilerComponentFactory extends CreateLexer implements IPLPLexer  
 	}
 	/*This @nextToken Function is used to return single token 
 	 * */
-	
 	@Override
 	public IPLPToken nextToken() throws LexicalException {
 		// TODO Auto-generated method stub
-	
-		
-		//tokens.remove(tokens.size());
-	
-		
+	try {
 		if(tokenCount >= tokens.size()) {
 			return null;
 		}
+		if(tokens.get(tokenCount).kind == kind.ERROR) {
+			LexicalException lexerror = new LexicalException("Error in character insert", 0,1 );
+			 throw lexerror;
+		}
+	
+		
+		
 		return tokens.get(tokenCount++);
+	}
+	catch(Exception e) {
+		 LexicalException lexerror = new LexicalException("Error in character insert", 0,1 );
+		 throw lexerror;
+	}
+	
 	
 	
 			
