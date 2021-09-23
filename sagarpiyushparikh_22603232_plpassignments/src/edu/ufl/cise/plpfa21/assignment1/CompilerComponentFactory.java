@@ -3,6 +3,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import edu.ufl.cise.plpfa21.assignment1.PLPTokenKinds.Kind;
+import edu.ufl.cise.plpfa21.assignment1.CreateParser;
+import edu.ufl.cise.plpfa21.assignment2.IPLPParser;
 
 public class CompilerComponentFactory extends CreateLexer implements IPLPLexer  {
 	static ArrayList<CreateToken> tokens;
@@ -30,13 +32,13 @@ public class CompilerComponentFactory extends CreateLexer implements IPLPLexer  
 		}
 
 		return singletoken; 
-
-	
-
-		
-		
-
 	}
+	 public static IPLPParser getParser(String input) {
+	   	 //Implement this in Assignment 2
+	   	 //Your parser will create a lexer.
+		 CreateParser parser = new CreateParser(input);
+		 return parser;
+	    }
 	
 
 	/*This @nextToken Function is used to return single token 
@@ -61,12 +63,7 @@ public class CompilerComponentFactory extends CreateLexer implements IPLPLexer  
 		 LexicalException lexerror = new LexicalException("Error in character insert", 0,1 );
 		 throw lexerror;
 	}
-	
-	
-	
-			
-
-
 	}
+
 
 }
