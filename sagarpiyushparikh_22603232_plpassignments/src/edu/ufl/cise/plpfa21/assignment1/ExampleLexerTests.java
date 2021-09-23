@@ -14,12 +14,9 @@ class ExampleLexerTests implements PLPTokenKinds {
 	@Test
 	public void test0() throws LexicalException {
 		String input = """
-				
+
 				""";
-		System.out.print("input");
-		System.out.print(input);
 		IPLPLexer lexer = getLexer(input);
-		System.out.print(lexer);
 		{
 			IPLPToken token = lexer.nextToken();
 			Kind kind = token.getKind();
@@ -36,7 +33,7 @@ class ExampleLexerTests implements PLPTokenKinds {
 
 				""";
 		IPLPLexer lexer = getLexer(input);
-		
+
 		{
 			IPLPToken token = lexer.nextToken();
 			Kind kind = token.getKind();
@@ -83,7 +80,6 @@ class ExampleLexerTests implements PLPTokenKinds {
 				a123 123a
 				""";
 		IPLPLexer lexer = getLexer(input);
-		System.out.println(lexer);
 		{
 			IPLPToken token = lexer.nextToken();
 			Kind kind = token.getKind();
@@ -217,30 +213,28 @@ class ExampleLexerTests implements PLPTokenKinds {
 			IPLPToken token = lexer.nextToken();
 		});
 	}
+
 	@Test
 	public void test6() throws LexicalException {
 		String input = """
-				case
+				CASE
 				""";
-		System.out.print("input");
-		System.out.print(input);
 		IPLPLexer lexer = getLexer(input);
-		System.out.print(lexer);
 		{
 			IPLPToken token = lexer.nextToken();
 			Kind kind = token.getKind();
 			assertEquals(kind, Kind.KW_CASE);
 		}
 	}
+
 	@Test
 	public void test7() throws LexicalException {
 		String input = """
 				+-
 				""";
-		System.out.print("input");
-		System.out.print(input);
+
 		IPLPLexer lexer = getLexer(input);
-		System.out.print(lexer);
+
 		{
 			IPLPToken token = lexer.nextToken();
 			Kind kind = token.getKind();
@@ -252,21 +246,21 @@ class ExampleLexerTests implements PLPTokenKinds {
 			assertEquals(kind, Kind.MINUS);
 		}
 	}
+
 	@Test
 	public void test8() throws LexicalException {
 		String input = """
-				'name'
+				/* jndknf */
 				""";
-		System.out.print("input");
-		System.out.print(input);
+
 		IPLPLexer lexer = getLexer(input);
-		System.out.print(lexer);
+
 		{
 			IPLPToken token = lexer.nextToken();
 			Kind kind = token.getKind();
-			assertEquals(kind, Kind.STRING_LITERAL);
+			assertEquals(kind, Kind.EOF);
 		}
-		
+
 	}
 
 }

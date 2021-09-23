@@ -46,7 +46,7 @@ public CreateToken (Kind kind,int position_Index, int input_Length,int input_Lin
 	@Override
 	public Kind getKind() {
 		// TODO Auto-generated method stub
-		System.out.println(this.kind);
+		
 		return this.kind;
 	}
 
@@ -75,7 +75,7 @@ public CreateToken (Kind kind,int position_Index, int input_Length,int input_Lin
 	public String getStringValue() {
 		// TODO Auto-generated method stub
 
-		return this.text;
+		return this.input;
 	}
 
 	@Override

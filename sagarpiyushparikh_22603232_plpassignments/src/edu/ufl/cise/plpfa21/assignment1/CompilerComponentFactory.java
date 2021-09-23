@@ -1,5 +1,4 @@
 package edu.ufl.cise.plpfa21.assignment1;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -38,6 +37,8 @@ public class CompilerComponentFactory extends CreateLexer implements IPLPLexer  
 		
 
 	}
+	
+
 	/*This @nextToken Function is used to return single token 
 	 * */
 	@Override
