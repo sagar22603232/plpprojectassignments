@@ -37,6 +37,12 @@ public class CompilerComponentFactory extends CreateLexer implements IPLPLexer  
 		
 
 	}
+	 public static IPLPParser getParser(String input) {
+	   	 //Implement this in Assignment 2
+	   	 //Your parser will create a lexer.
+		 return null;
+	    }
+
 	
 
 	/*This @nextToken Function is used to return single token 
