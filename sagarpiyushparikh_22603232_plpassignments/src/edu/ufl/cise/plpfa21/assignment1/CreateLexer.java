@@ -46,9 +46,18 @@ public class CreateLexer extends CreateToken implements IPLPToken {
 	 */
 
 	public static enum State {
-		START("start"), KEYWORD("keyword"), Identifier("identifier"), IntLiteral("intliteral"),
-		StringLiteral("stringliteral"), EscapeSeq("escapeseq"), Comment("comment"), AndLiteral("andliteral"),
-		OrLiteral("orliteral"), NotEqual("noteequal"), HaveEqual("haveequal"), WhiteSpace("whitespace"),
+		START("start"), 
+		KEYWORD("keyword"), 
+		Identifier("identifier"),
+		IntLiteral("intliteral"),
+		StringLiteral("stringliteral"), 
+		EscapeSeq("escapeseq"), 
+		Comment("comment"), 
+		AndLiteral("andliteral"),
+		OrLiteral("orliteral"), 
+		NotEqual("noteequal"), 
+		HaveEqual("haveequal"), 
+		WhiteSpace("whitespace"),
 		Start_Comment("startcomment");
 
 		State(String stateName) {
@@ -111,7 +120,7 @@ public class CreateLexer extends CreateToken implements IPLPToken {
 		try {
 			while (indexPosition <= inputLength) {
 
-				System.out.println(input.charAt(indexPosition));
+				char singleChar = input.charAt(indexPosition);
 
 				if (indexPosition < inputLength) {
 					charIndex = input.charAt(indexPosition);
