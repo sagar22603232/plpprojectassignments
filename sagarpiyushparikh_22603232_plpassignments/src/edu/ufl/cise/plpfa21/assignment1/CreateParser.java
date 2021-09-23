@@ -4,23 +4,27 @@ import java.util.ArrayList;
 import edu.ufl.cise.plpfa21.assignment2.IPLPParser;
 
 public class CreateParser extends ValidateParser implements IPLPParser {
+
+
+
+
 	String message;
-	static ArrayList<CreateToken> tokens;
-	IPLPParser parse;
-	ValidateParser checkParser = new ValidateParser();
-	CreateParser(String message){
+	ArrayList<CreateToken> tokens;
+	CreateParser(ArrayList<CreateToken> tokens, String message) {
+		super(tokens);
+		this.tokens = tokens;
 		this.message = message;
+		// TODO Auto-generated constructor stub
 	}
+	
 	
 	@Override
 	public void parse() throws Exception {
 		// TODO Auto-generated method stub
 		try {
-			CreateLexer lexer = new CreateLexer(this.message);
-			tokens = lexer.CreateLexerTokens(this.message);
-			for(CreateToken t: tokens) {
-				checkParser.validateSingleParse(t);
-			}
+			ValidateParser checkParser = new ValidateParser(this.tokens);
+			checkParser.validateSingleParse(this.message);
+			
 		}
 		catch(Exception e) {
 			throw e;

@@ -46,18 +46,9 @@ public class CreateLexer extends CreateToken implements IPLPToken {
 	 */
 
 	public static enum State {
-		START("start"), 
-		KEYWORD("keyword"), 
-		Identifier("identifier"),
-		IntLiteral("intliteral"),
-		StringLiteral("stringliteral"), 
-		EscapeSeq("escapeseq"), 
-		Comment("comment"), 
-		AndLiteral("andliteral"),
-		OrLiteral("orliteral"), 
-		NotEqual("noteequal"), 
-		HaveEqual("haveequal"), 
-		WhiteSpace("whitespace"),
+		START("start"), KEYWORD("keyword"), Identifier("identifier"), IntLiteral("intliteral"),
+		StringLiteral("stringliteral"), EscapeSeq("escapeseq"), Comment("comment"), AndLiteral("andliteral"),
+		OrLiteral("orliteral"), NotEqual("noteequal"), HaveEqual("haveequal"), WhiteSpace("whitespace"),
 		Start_Comment("startcomment");
 
 		State(String stateName) {
@@ -328,7 +319,24 @@ public class CreateLexer extends CreateToken implements IPLPToken {
 							while (charposition <= givenInput.length()) {
 								if (Character.isWhitespace(givenInput.charAt(charposition))
 										|| givenInput.charAt(charposition) == '\n'
-										|| givenInput.charAt(charposition) == '\r') {
+										|| givenInput.charAt(charposition) == '\r'
+										|| givenInput.charAt(charposition) == ':'
+										|| givenInput.charAt(charposition) == '['
+										|| givenInput.charAt(charposition) == ']'
+										|| givenInput.charAt(charposition) == ';'
+										|| givenInput.charAt(charposition) == '+'
+										|| givenInput.charAt(charposition) == '-'
+										|| givenInput.charAt(charposition) == '('
+										|| givenInput.charAt(charposition) == ')'
+										|| givenInput.charAt(charposition) == '>'
+										|| givenInput.charAt(charposition) == '<'
+										|| givenInput.charAt(charposition) == '='
+										|| givenInput.charAt(charposition) == '!'
+										|| givenInput.charAt(charposition) == '|'
+										|| givenInput.charAt(charposition) == '&'
+										|| givenInput.charAt(charposition) == ','
+										|| givenInput.charAt(charposition) == '*'
+										|| givenInput.charAt(charposition) == '/') {
 									break;
 
 								} else {
@@ -366,7 +374,15 @@ public class CreateLexer extends CreateToken implements IPLPToken {
 						while (charposition <= givenInput.length()) {
 							if (Character.isWhitespace(givenInput.charAt(charposition))
 									|| givenInput.charAt(charposition) == '\n'
-									|| givenInput.charAt(charposition) == '\r'
+									|| givenInput.charAt(charposition) == '\r' || givenInput.charAt(charposition) == ':'
+									|| givenInput.charAt(charposition) == '[' || givenInput.charAt(charposition) == ']'
+									|| givenInput.charAt(charposition) == ';' || givenInput.charAt(charposition) == '+'
+									|| givenInput.charAt(charposition) == '-' || givenInput.charAt(charposition) == '('
+									|| givenInput.charAt(charposition) == ')' || givenInput.charAt(charposition) == '>'
+									|| givenInput.charAt(charposition) == '<' || givenInput.charAt(charposition) == '='
+									|| givenInput.charAt(charposition) == '!' || givenInput.charAt(charposition) == '|'
+									|| givenInput.charAt(charposition) == '&' || givenInput.charAt(charposition) == ','
+									|| givenInput.charAt(charposition) == '*' || givenInput.charAt(charposition) == '/'
 									|| Character.isLetter(givenInput.charAt(charposition))) {
 								break;
 
@@ -474,7 +490,8 @@ public class CreateLexer extends CreateToken implements IPLPToken {
 							charposition = charposition + 1;
 						}
 					}
-					indexPosition = charposition;
+					indexPosition = charposition+1;
+					
 					tokens.add(new CreateToken(Kind.STRING_LITERAL, indexPosition, inputLength, linePostion, spacecount,
 							input.charAt(charposition), input.charAt(charposition), albha));
 					albha = "";

@@ -1,9 +1,5 @@
 package edu.ufl.cise.plpfa21.assignment1;
 import java.util.ArrayList;
-import java.util.HashMap;
-
-import edu.ufl.cise.plpfa21.assignment1.PLPTokenKinds.Kind;
-import edu.ufl.cise.plpfa21.assignment1.CreateParser;
 import edu.ufl.cise.plpfa21.assignment2.IPLPParser;
 
 public class CompilerComponentFactory extends CreateLexer implements IPLPLexer  {
@@ -36,7 +32,13 @@ public class CompilerComponentFactory extends CreateLexer implements IPLPLexer  
 	 public static IPLPParser getParser(String input) {
 	   	 //Implement this in Assignment 2
 	   	 //Your parser will create a lexer.
-		 CreateParser parser = new CreateParser(input);
+		 
+		 getLexer(input);
+		 for(CreateToken t:tokens) {
+			 System.out.println(t.getKind());
+			 System.out.println(t.getText());
+		 }
+		 CreateParser parser = new CreateParser(tokens, input);
 		 return parser;
 	    }
 	

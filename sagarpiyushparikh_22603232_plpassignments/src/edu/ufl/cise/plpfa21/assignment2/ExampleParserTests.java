@@ -80,6 +80,12 @@ class ExampleParserTests {
 		""";
 		noErrorParse(input);
 		}
+		@Test public void test6() {
+			String input = """
+			VAR a: INT;
+			""";
+			noErrorParse(input);
+			}
 
        //This input has a syntax error at line 2, position 19.
 		@Test public void test5()  {
