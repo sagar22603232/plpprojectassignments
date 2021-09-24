@@ -9,37 +9,38 @@ public class ValidateParser {
 	IPLPToken token;
 	ArrayList<CreateToken> tokens;
 	int count;
+	int tokenCount;
 	Kind kind;
 
 	ValidateParser(ArrayList<CreateToken> tokens) {
 		this.tokens = tokens;
 		this.token = tokens.get(0);
+		this.tokenCount = 0;
 		this.count = 1;
 	}
 
 	public void validateSingleParse(String message) throws SyntaxException {
-		
-	
-		switch(this.token.getKind()) {
-		case KW_VAR->{
-			checkofVariable();
-			break;
-		}
-		case KW_VAL->{
-			checkofVal();
-			break;
-		}
-		case EOF ->{
-			checkofEOF();
-			break;
-		}
-		default ->{
-			throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());
-		}
-		}
-	
-		
-		
+		while(this.tokenCount  < this.tokens.size()) {
+			switch(this.tokens.get(this.tokenCount).getKind()) {
+			case KW_VAR->{
+				checkofVariable();
+				break;
+			}
+			case KW_VAL->{
+				checkofVal();
+				break;
+			}
+			case EOF ->{
+				checkofEOF();
+				break;
+			}
+			default ->{
+				throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());
+			}
+			}
+			consume();
+			this.tokenCount  = this.tokenCount +1;
+		}	
 	}
 
 	public IPLPToken checkofEOF()throws SyntaxException  {
@@ -56,8 +57,11 @@ public class ValidateParser {
 		System.out.println("line 2" +token.getKind());
 		if (this.token.getKind() == Kind.KW_VAR) {
 			consume();
+			this.tokenCount  = this.tokenCount +1;
 			checkofNameDef();
 			consume();
+			this.tokenCount  = this.tokenCount +1;
+			System.out.println("line 11" +token.getKind());
 			checkofSemicolon();
 			return this.token;
 		}
@@ -68,11 +72,15 @@ public class ValidateParser {
 		System.out.println("line 2" +token.getKind());
 		if (this.token.getKind() == Kind.KW_VAL) {
 			consume();
+			this.tokenCount  = this.tokenCount +1;
 			checkofNameDef();
 			consume();
+			this.tokenCount  = this.tokenCount +1;
 			checkofEqual();
 			consume();
+			this.tokenCount  = this.tokenCount +1;
 			consume();
+			this.tokenCount  = this.tokenCount +1;
 			checkofSemicolon();
 			return this.token;
 		}
@@ -83,8 +91,10 @@ public class ValidateParser {
 		System.out.println("line 3" +token.getKind());
 		if (this.token.getKind() == Kind.IDENTIFIER) {
 			consume();
+			this.tokenCount  = this.tokenCount +1;
 			checkofColon();
 			consume();
+			this.tokenCount  = this.tokenCount +1;
 			checkofType();
 			return this.token;
 		}
@@ -115,6 +125,7 @@ public class ValidateParser {
 		
 		if (this.token.getKind() == Kind.KW_LIST) {
 			consume();
+			this.tokenCount  = this.tokenCount +1;
 				if(this.token.getKind() == Kind.LSQUARE) {
 					
 					System.out.println("line 8" +this.token.getKind());
@@ -123,6 +134,7 @@ public class ValidateParser {
 									this.token.getKind() == Kind.KW_STRING 
 							) {
 						consume();
+						this.tokenCount  = this.tokenCount +1;
 						System.out.println("line 9" +this.token.getKind());
 						if(this.token.getKind() == Kind.RSQUARE ) {
 							return this.token;
@@ -134,6 +146,7 @@ public class ValidateParser {
 					}
 					else {
 						consume();
+						this.tokenCount  = this.tokenCount +1;
 						if(this.token.getKind() == Kind.RSQUARE ) {
 							return this.token;
 						}
@@ -153,6 +166,7 @@ public class ValidateParser {
 	public IPLPToken checkofSemicolon() throws SyntaxException {
 
 		if (this.token.getKind() == Kind.SEMI) {
+			System.out.println("line 12" +token.getKind());
 			return this.token;
 		}
 		throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());

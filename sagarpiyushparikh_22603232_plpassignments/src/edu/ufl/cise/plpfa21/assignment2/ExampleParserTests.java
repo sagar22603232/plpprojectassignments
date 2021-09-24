@@ -83,6 +83,8 @@ class ExampleParserTests {
 		@Test public void test6() {
 			String input = """
 			VAR a: INT;
+			VAR b: BOOLEAN;
+			VAL x: BOOLEAN = TRUE;
 			""";
 			noErrorParse(input);
 			}
