@@ -262,5 +262,20 @@ class ExampleLexerTests implements PLPTokenKinds {
 		}
 
 	}
+	@Test
+	public void test9() throws LexicalException {
+		String input ="""
+				a:INT = 88888888888888888888888888888888888888888888888888888888888;
+				""";
+
+		IPLPLexer lexer = getLexer(input);
+
+		{
+			IPLPToken token = lexer.nextToken();
+			Kind kind = token.getKind();
+			assertEquals(kind, Kind.EOF);
+		}
+
+	}
 
 }

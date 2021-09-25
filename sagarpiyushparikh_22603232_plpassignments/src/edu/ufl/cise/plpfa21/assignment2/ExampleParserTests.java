@@ -88,6 +88,13 @@ class ExampleParserTests {
 			""";
 			noErrorParse(input);
 			}
+		
+		@Test public void test7() {
+			String input = """
+			VAR a;
+			""";
+			noErrorParse(input);
+			}
 
        //This input has a syntax error at line 2, position 19.
 		@Test public void test5()  {
@@ -98,6 +105,14 @@ class ExampleParserTests {
 		""";
 		syntaxErrorParse(input,2,19);
 		}
+	       //This input has a syntax error at line 2, position 19.
+			@Test public void test8()  {
+			String input = """
+			FUN func(a) DO
+			END
+			""";
+			noErrorParse(input);
+			}
 
 
 	

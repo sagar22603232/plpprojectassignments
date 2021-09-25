@@ -20,153 +20,223 @@ public class ValidateParser {
 	}
 
 	public void validateSingleParse(String message) throws SyntaxException {
-		while(this.tokenCount  < this.tokens.size()) {
-			switch(this.tokens.get(this.tokenCount).getKind()) {
-			case KW_VAR->{
+		while (this.tokenCount < this.tokens.size()) {
+			switch (this.tokens.get(this.tokenCount).getKind()) {
+			case KW_VAR -> {
 				checkofVariable();
 				break;
 			}
-			case KW_VAL->{
+			case KW_VAL -> {
 				checkofVal();
 				break;
 			}
-			case EOF ->{
+			case EOF -> {
 				checkofEOF();
 				break;
 			}
-			default ->{
-				throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());
+			case KW_FUN -> {
+				checkofFunc();
+				break;
+			}
+			default -> {
+				throw new SyntaxException(this.token.getText(), this.token.getLine(),
+						this.token.getCharPositionInLine());
 			}
 			}
 			consume();
-			this.tokenCount  = this.tokenCount +1;
-		}	
+			this.tokenCount = this.tokenCount + 1;
+		}
 	}
 
-	public IPLPToken checkofEOF()throws SyntaxException  {
-		System.out.println("line 1" +token.getKind());
-		
+	public IPLPToken checkofEOF() throws SyntaxException {
 		if (this.token.getKind() == Kind.EOF) {
 			return this.token;
 		}
 		throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());
-		
+
 	}
 
 	public IPLPToken checkofVariable() throws SyntaxException {
-		System.out.println("line 2" +token.getKind());
 		if (this.token.getKind() == Kind.KW_VAR) {
 			consume();
-			this.tokenCount  = this.tokenCount +1;
+			this.tokenCount = this.tokenCount + 1;
+			checkofNameDef();
+			if (this.token.getKind() == Kind.SEMI) {
+				checkofSemicolon();
+			} else {
+				consume();
+				this.tokenCount = this.tokenCount + 1;
+				checkofSemicolon();
+			}
+			return this.token;
+		}
+		throw new SyntaxException(token.getText(), token.getLine(), token.getCharPositionInLine());
+	}
+
+	public IPLPToken checkofVal() throws SyntaxException {
+		if (this.token.getKind() == Kind.KW_VAL) {
+			consume();
+			this.tokenCount = this.tokenCount + 1;
 			checkofNameDef();
 			consume();
-			this.tokenCount  = this.tokenCount +1;
-			System.out.println("line 11" +token.getKind());
+			this.tokenCount = this.tokenCount + 1;
+			checkofEqual();
+			consume();
+			this.tokenCount = this.tokenCount + 1;
+			consume();
+			this.tokenCount = this.tokenCount + 1;
 			checkofSemicolon();
 			return this.token;
 		}
 		throw new SyntaxException(token.getText(), token.getLine(), token.getCharPositionInLine());
 	}
-	
-	public IPLPToken checkofVal() throws SyntaxException {
-		System.out.println("line 2" +token.getKind());
-		if (this.token.getKind() == Kind.KW_VAL) {
+
+	public IPLPToken checkofFunc() throws SyntaxException {
+		consume();
+		this.tokenCount = this.tokenCount + 1;
+		if (this.token.getKind() == Kind.IDENTIFIER) {
 			consume();
-			this.tokenCount  = this.tokenCount +1;
-			checkofNameDef();
-			consume();
-			this.tokenCount  = this.tokenCount +1;
-			checkofEqual();
-			consume();
-			this.tokenCount  = this.tokenCount +1;
-			consume();
-			this.tokenCount  = this.tokenCount +1;
-			checkofSemicolon();
-			return this.token;
+			this.tokenCount = this.tokenCount + 1;
+			if (this.token.getKind() == Kind.LPAREN) {
+				consume();
+				this.tokenCount = this.tokenCount + 1;
+				if (this.token.getKind() == Kind.RPAREN) {
+					checkofFunctionType();
+				} else {
+					while (this.token.getKind() != Kind.RPAREN) {
+						if (this.token.getKind() == Kind.COMMA) {
+							consume();
+							this.tokenCount = this.tokenCount + 1;
+							checkofNameDef();
+						} else {
+							checkofNameDef();
+//							consume();
+//							this.tokenCount  = this.tokenCount +1;
+						}
+					}
+					checkofFunctionType();
+					return this.token;
+
+				}
+			}
+			throw new SyntaxException(token.getText(), token.getLine(), token.getCharPositionInLine());
 		}
 		throw new SyntaxException(token.getText(), token.getLine(), token.getCharPositionInLine());
 	}
 
 	public IPLPToken checkofNameDef() throws SyntaxException {
-		System.out.println("line 3" +token.getKind());
 		if (this.token.getKind() == Kind.IDENTIFIER) {
 			consume();
-			this.tokenCount  = this.tokenCount +1;
-			checkofColon();
-			consume();
-			this.tokenCount  = this.tokenCount +1;
-			checkofType();
+			this.tokenCount = this.tokenCount + 1;
+			if (this.token.getKind() == Kind.SEMI) {
+				return this.token;
+			} else {
+				if (this.token.getKind() == Kind.COLON) {
+					consume();
+					this.tokenCount = this.tokenCount + 1;
+					checkofType();
+				} else {
+					return this.token;
+				}
+			}
 			return this.token;
 		}
 		throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());
 	}
 
-	public IPLPToken checkofColon() throws SyntaxException {
-		System.out.println("line 4" +token.getKind());
-		if (this.token.getKind() == Kind.COLON) {
-			return this.token;
+	public IPLPToken checkofFunctionType() throws SyntaxException {
+		if (this.token.getKind() == Kind.RPAREN) {
+			consume();
+			this.tokenCount = this.tokenCount + 1;
+			if (this.token.getKind() == Kind.COLON) {
+				consume();
+				this.tokenCount = this.tokenCount + 1;
+				checkofType();
+				consume();
+				this.tokenCount = this.tokenCount + 1;
+				checkofDo();
+				consume();
+				this.tokenCount = this.tokenCount + 1;
+				checkofEnd();
+				return this.token;
+			} else {
+				checkofDo();
+				consume();
+				this.tokenCount = this.tokenCount + 1;
+				checkofEnd();
+				return this.token;
+			}
 		}
 		throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());
 	}
+
 	public IPLPToken checkofEqual() throws SyntaxException {
-		System.out.println("line 4" +token.getKind());
+		System.out.println("line 4" + token.getKind());
 		if (this.token.getKind() == Kind.ASSIGN) {
 			return this.token;
 		}
 		throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());
 	}
+
 	public IPLPToken checkofType() throws SyntaxException {
-		System.out.println("line 5" +token.getKind());
-		if (this.token.getKind() == Kind.KW_INT ||
-				this.token.getKind() == Kind.KW_BOOLEAN ||
-						this.token.getKind() == Kind.KW_STRING) {
+		if (this.token.getKind() == Kind.KW_INT || this.token.getKind() == Kind.KW_BOOLEAN
+				|| this.token.getKind() == Kind.KW_STRING) {
 			return this.token;
 		}
-		
+
 		if (this.token.getKind() == Kind.KW_LIST) {
 			consume();
-			this.tokenCount  = this.tokenCount +1;
-				if(this.token.getKind() == Kind.LSQUARE) {
-					
-					System.out.println("line 8" +this.token.getKind());
-					if (this.token.getKind() == Kind.KW_INT ||
-							this.token.getKind() == Kind.KW_BOOLEAN ||
-									this.token.getKind() == Kind.KW_STRING 
-							) {
-						consume();
-						this.tokenCount  = this.tokenCount +1;
-						System.out.println("line 9" +this.token.getKind());
-						if(this.token.getKind() == Kind.RSQUARE ) {
-							return this.token;
-						}
-						else {
-							throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());
-						}
-						
+			this.tokenCount = this.tokenCount + 1;
+			if (this.token.getKind() == Kind.LSQUARE) {
+				if (this.token.getKind() == Kind.KW_INT || this.token.getKind() == Kind.KW_BOOLEAN
+						|| this.token.getKind() == Kind.KW_STRING) {
+					consume();
+					this.tokenCount = this.tokenCount + 1;
+					if (this.token.getKind() == Kind.RSQUARE) {
+						return this.token;
+					} else {
+						throw new SyntaxException(this.token.getText(), this.token.getLine(),
+								this.token.getCharPositionInLine());
 					}
-					else {
-						consume();
-						this.tokenCount  = this.tokenCount +1;
-						if(this.token.getKind() == Kind.RSQUARE ) {
-							return this.token;
-						}
-						else {
-							throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());
-						}
+
+				} else {
+					consume();
+					this.tokenCount = this.tokenCount + 1;
+					if (this.token.getKind() == Kind.RSQUARE) {
+						return this.token;
+					} else {
+						throw new SyntaxException(this.token.getText(), this.token.getLine(),
+								this.token.getCharPositionInLine());
 					}
 				}
-				else {
-					throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());
-				}
-				
-				
+			} else {
+				throw new SyntaxException(this.token.getText(), this.token.getLine(),
+						this.token.getCharPositionInLine());
 			}
+
+		}
 		throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());
 	}
+
 	public IPLPToken checkofSemicolon() throws SyntaxException {
 
 		if (this.token.getKind() == Kind.SEMI) {
-			System.out.println("line 12" +token.getKind());
+			return this.token;
+		}
+		throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());
+	}
+
+	public IPLPToken checkofDo() throws SyntaxException {
+
+		if (this.token.getKind() == Kind.KW_DO) {
+			return this.token;
+		}
+		throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());
+	}
+
+	public IPLPToken checkofEnd() throws SyntaxException {
+
+		if (this.token.getKind() == Kind.KW_END) {
 			return this.token;
 		}
 		throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());
@@ -174,7 +244,7 @@ public class ValidateParser {
 
 	public void consume() throws SyntaxException {
 		if (this.count >= tokens.size()) {
-			
+
 		} else {
 			if (this.tokens.get(this.count).kind == kind.ERROR) {
 

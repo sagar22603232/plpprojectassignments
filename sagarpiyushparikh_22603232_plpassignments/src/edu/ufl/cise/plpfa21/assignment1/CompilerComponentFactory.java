@@ -20,7 +20,6 @@ public class CompilerComponentFactory extends CreateLexer implements IPLPLexer  
 		CompilerComponentFactory lexer = new CompilerComponentFactory(input);
 		try {
 			tokens = lexer.CreateLexerTokens(input);
-			
 			singletoken  = lexer;
 		} catch (LexicalException e) {
 			// TODO Auto-generated catch block
