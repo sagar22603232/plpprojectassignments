@@ -159,9 +159,9 @@ public class ValidateParser {
 				consume();
 				this.tokenCount = this.tokenCount + 1;
 				checkofDo();
-				consume();
-				this.tokenCount = this.tokenCount + 1;
-				checkofBlock();
+//				consume();
+//				this.tokenCount = this.tokenCount + 1;
+//				checkofBlock();
 				consume();
 				this.tokenCount = this.tokenCount + 1;
 				checkofEnd();
@@ -169,9 +169,9 @@ public class ValidateParser {
 			} else {
 				System.out.println(this.token.getKind());
 				checkofDo();
-				consume();
-				this.tokenCount = this.tokenCount + 1;
-				checkofBlock();
+//				consume();
+//				this.tokenCount = this.tokenCount + 1;
+//				checkofBlock();
 				consume();
 				this.tokenCount = this.tokenCount + 1;
 				checkofEnd();
