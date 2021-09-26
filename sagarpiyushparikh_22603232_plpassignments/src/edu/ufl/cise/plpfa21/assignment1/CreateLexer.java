@@ -46,9 +46,19 @@ public class CreateLexer extends CreateToken implements IPLPToken {
 	 */
 
 	public static enum State {
-		START("start"), KEYWORD("keyword"), Identifier("identifier"), IntLiteral("intliteral"),
-		StringLiteral("stringliteral"), EscapeSeq("escapeseq"), Comment("comment"), AndLiteral("andliteral"),
-		OrLiteral("orliteral"), NotEqual("noteequal"), HaveEqual("haveequal"), WhiteSpace("whitespace"),
+		START("start"),
+		KEYWORD("keyword"),
+		Identifier("identifier"),
+		IntLiteral("intliteral"),
+		StringLiteralForSingleQuote("stringliteralforsinglequote"),
+		StringLiteralForDoubleQuote("stringliteralfordoublequote"),
+		EscapeSeq("escapeseq"),
+		Comment("comment"),
+		AndLiteral("andliteral"),
+		OrLiteral("orliteral"), 
+		NotEqual("noteequal"), 
+		HaveEqual("haveequal"), 
+		WhiteSpace("whitespace"),
 		Start_Comment("startcomment");
 
 		State(String stateName) {
@@ -103,6 +113,7 @@ public class CreateLexer extends CreateToken implements IPLPToken {
 		int spacecount = 0;
 		int linecount = 0;
 		char EOFchar = 0;
+		int valuedigit  = 0;
 		String albha = "";
 		int charposition = 0;
 		StringBuilder chdict = new StringBuilder();
@@ -242,9 +253,16 @@ public class CreateLexer extends CreateToken implements IPLPToken {
 							indexPosition = indexPosition + 1;
 							startLinePostion = startLinePostion + 1;
 						}
-						case '\'', '\"' -> {
-							state = State.StringLiteral;
-
+						case '\'' -> {
+							state = State.StringLiteralForSingleQuote;
+							albha = "\'";
+							indexPosition = indexPosition + 1;
+							charposition = indexPosition;
+							startLinePostion = startLinePostion + 1;
+						}
+						case '\"' ->{
+							state = State.StringLiteralForDoubleQuote;
+							albha = "\"";
 							indexPosition = indexPosition + 1;
 							charposition = indexPosition;
 							startLinePostion = startLinePostion + 1;
@@ -339,7 +357,11 @@ public class CreateLexer extends CreateToken implements IPLPToken {
 										|| givenInput.charAt(charposition) == '/') {
 									break;
 
-								} else {
+								} 
+								if (keyWords.containsKey(albha)) {
+									break;
+								}
+								else {
 
 									albha = albha + Character.toString(givenInput.charAt(charposition));
 									charposition = charposition + 1;
@@ -390,6 +412,7 @@ public class CreateLexer extends CreateToken implements IPLPToken {
 								if (Character.isDigit(givenInput.charAt(charposition))) {
 
 									albha = albha + Character.toString(givenInput.charAt(charposition));
+									valuedigit = Integer.parseInt(albha);
 									charposition = charposition + 1;
 								} else {
 									break;
@@ -398,7 +421,6 @@ public class CreateLexer extends CreateToken implements IPLPToken {
 
 						}
 						indexPosition = charposition;
-						int valuedigit = Integer.parseInt(albha);
 						if (valuedigit < Integer.MAX_VALUE) {
 							tokens.add(new CreateToken(Kind.INT_LITERAL, indexPosition, inputLength, linePostion,
 									spacecount, input.charAt(charposition), '1', albha));
@@ -414,7 +436,8 @@ public class CreateLexer extends CreateToken implements IPLPToken {
 					} catch (Exception e) {
 						tokens.add(new CreateToken(Kind.ERROR, indexPosition, inputLength, linePostion,
 								startLinePostion, charIndex, charIndex, albha));
-						indexPosition = indexPosition + 1;
+						
+						indexPosition = inputLength;
 						break;
 
 					}
@@ -431,8 +454,6 @@ public class CreateLexer extends CreateToken implements IPLPToken {
 
 						tokens.add(new CreateToken(Kind.BANG, indexPosition, inputLength, linePostion, charposition,
 								'!', '!', "!"));
-						indexPosition = indexPosition + 1;
-						startLinePostion = startLinePostion + 1;
 						state = State.START;
 					}
 				}
@@ -462,9 +483,10 @@ public class CreateLexer extends CreateToken implements IPLPToken {
 						state = State.START;
 
 					} else {
+						tokens.add(new CreateToken(Kind.ERROR, indexPosition, inputLength, linePostion,
+								startLinePostion, charIndex, charIndex, albha));
 						indexPosition = indexPosition + 1;
-						startLinePostion = startLinePostion + 1;
-						state = State.START;
+						break;
 					}
 				}
 				case OrLiteral -> {
@@ -481,9 +503,9 @@ public class CreateLexer extends CreateToken implements IPLPToken {
 						state = State.START;
 					}
 				}
-				case StringLiteral -> {
+				case StringLiteralForSingleQuote -> {
 					while (charposition <= givenInput.length()) {
-						if (givenInput.charAt(charposition) == '\'' || givenInput.charAt(charposition) == '\"') {
+						if (givenInput.charAt(charposition) == '\'') {
 							break;
 						} else {
 							albha = albha + Character.toString(givenInput.charAt(charposition));
@@ -491,7 +513,27 @@ public class CreateLexer extends CreateToken implements IPLPToken {
 						}
 					}
 					indexPosition = charposition+1;
-					
+					albha = albha + '\'';
+					tokens.add(new CreateToken(Kind.STRING_LITERAL, indexPosition, inputLength, linePostion, spacecount,
+							input.charAt(charposition), input.charAt(charposition), albha));
+					albha = "";
+					startLinePostion = startLinePostion + 1;
+					charcount = charposition;
+					linecount = 0;
+					state = State.START;
+					chdict.setLength(0);
+				}
+				case StringLiteralForDoubleQuote -> {
+					while (charposition <= givenInput.length()) {
+						if (givenInput.charAt(charposition) == '\"') {
+							break;
+						} else {
+							albha = albha + Character.toString(givenInput.charAt(charposition));
+							charposition = charposition + 1;
+						}
+					}
+					indexPosition = charposition+1;
+					albha = albha + '\"';
 					tokens.add(new CreateToken(Kind.STRING_LITERAL, indexPosition, inputLength, linePostion, spacecount,
 							input.charAt(charposition), input.charAt(charposition), albha));
 					albha = "";

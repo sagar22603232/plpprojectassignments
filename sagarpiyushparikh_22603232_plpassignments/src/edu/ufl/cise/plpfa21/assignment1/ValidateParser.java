@@ -78,8 +78,6 @@ public class ValidateParser {
 			consume();
 			this.tokenCount = this.tokenCount + 1;
 			checkofNameDef();
-			consume();
-			this.tokenCount = this.tokenCount + 1;
 			checkofEqual();
 			consume();
 			this.tokenCount = this.tokenCount + 1;
@@ -135,19 +133,25 @@ public class ValidateParser {
 					consume();
 					this.tokenCount = this.tokenCount + 1;
 					checkofType();
+					consume();
+					this.tokenCount = this.tokenCount + 1;
+					return this.token;
 				} else {
 					return this.token;
 				}
 			}
-			return this.token;
 		}
 		throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());
 	}
 
 	public IPLPToken checkofFunctionType() throws SyntaxException {
 		if (this.token.getKind() == Kind.RPAREN) {
+			System.out.println("Line 151");
+			System.out.println(this.token.getKind());
 			consume();
 			this.tokenCount = this.tokenCount + 1;
+			System.out.println("Line 155");
+			System.out.println(this.token.getKind());
 			if (this.token.getKind() == Kind.COLON) {
 				consume();
 				this.tokenCount = this.tokenCount + 1;
@@ -157,10 +161,17 @@ public class ValidateParser {
 				checkofDo();
 				consume();
 				this.tokenCount = this.tokenCount + 1;
+				checkofBlock();
+				consume();
+				this.tokenCount = this.tokenCount + 1;
 				checkofEnd();
 				return this.token;
 			} else {
+				System.out.println(this.token.getKind());
 				checkofDo();
+				consume();
+				this.tokenCount = this.tokenCount + 1;
+				checkofBlock();
 				consume();
 				this.tokenCount = this.tokenCount + 1;
 				checkofEnd();
@@ -240,6 +251,40 @@ public class ValidateParser {
 			return this.token;
 		}
 		throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());
+	}
+	
+	public IPLPToken checkofBlock() throws SyntaxException {
+		while(this.token.getKind()!= Kind.KW_END || this.token.getKind() != kind.SEMI) {
+			switch(this.token.getKind()) {
+			case KW_LET ->{
+				consume();
+				this.tokenCount = this.tokenCount + 1;
+				checkofNameDef();
+				if(this.token.getKind() == Kind.ASSIGN) {
+					
+				}
+				break;	
+			}
+			case KW_SWITCH ->{
+				consume();
+				this.tokenCount = this.tokenCount + 1;
+			}
+			case KW_IF ->{
+				
+			}
+			case KW_WHILE-> {
+				
+			}
+			case KW_RETURN ->{
+				
+			}
+			default -> {				
+			
+			}
+			}
+			
+		}
+		return this.token;
 	}
 
 	public void consume() throws SyntaxException {

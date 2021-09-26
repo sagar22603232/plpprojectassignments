@@ -105,10 +105,19 @@ class ExampleParserTests {
 		""";
 		syntaxErrorParse(input,2,19);
 		}
+		//This input has a syntax error at line 2, position 19.
+		@Test public void test8()  {
+		String input = """
+		FUN func(a) DO
+		END
+		""";
+		noErrorParse(input);
+		}
+
 	       //This input has a syntax error at line 2, position 19.
-			@Test public void test8()  {
+			@Test public void test9()  {
 			String input = """
-			FUN func(a) DO
+			FUN func(a :INT, b: STRING, c :BOOLEAN) DO
 			END
 			""";
 			noErrorParse(input);

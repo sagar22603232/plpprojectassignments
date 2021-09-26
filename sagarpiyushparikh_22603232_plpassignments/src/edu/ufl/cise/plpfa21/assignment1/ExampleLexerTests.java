@@ -201,6 +201,82 @@ class ExampleLexerTests implements PLPTokenKinds {
 			IPLPToken token = lexer.nextToken();
 		});
 	}
+	
+	@Test
+	public void test10() throws LexicalException {
+		String input = """
+				&&&
+				""";
+		IPLPLexer lexer = getLexer(input);
+		{
+			IPLPToken token = lexer.nextToken();
+			Kind kind = token.getKind();
+			assertEquals(kind, Kind.AND);
+		}
+		assertThrows(LexicalException.class, () -> {
+			@SuppressWarnings("unused")
+			IPLPToken token = lexer.nextToken();
+		});
+	}
+	
+	@Test
+	public void test11() throws LexicalException {
+		String input = """
+				!&&
+				""";
+		IPLPLexer lexer = getLexer(input);
+		{
+			IPLPToken token = lexer.nextToken();
+			Kind kind = token.getKind();
+			assertEquals(kind, Kind.BANG);
+		}
+		{
+			IPLPToken token = lexer.nextToken();
+			Kind kind = token.getKind();
+			assertEquals(kind, Kind.AND);
+		}
+		
+	}
+	
+	@Test
+	public void test12() throws LexicalException {
+		String input = """
+				END- END* ENDabc
+				""";
+		IPLPLexer lexer = getLexer(input);
+		{
+			IPLPToken token = lexer.nextToken();
+			Kind kind = token.getKind();
+			assertEquals(kind, Kind.KW_END);
+		}
+		{
+			IPLPToken token = lexer.nextToken();
+			Kind kind = token.getKind();
+			assertEquals(kind, Kind.MINUS);
+		}
+		{
+			IPLPToken token = lexer.nextToken();
+			Kind kind = token.getKind();
+			assertEquals(kind, Kind.KW_END);
+		}
+		{
+			IPLPToken token = lexer.nextToken();
+			Kind kind = token.getKind();
+			assertEquals(kind, Kind.TIMES);
+		}
+		{
+			IPLPToken token = lexer.nextToken();
+			Kind kind = token.getKind();
+			assertEquals(kind, Kind.KW_END);
+		}
+		{
+			IPLPToken token = lexer.nextToken();
+			Kind kind = token.getKind();
+			assertEquals(kind, Kind.IDENTIFIER);
+		}
+		
+	}
+
 
 	@Test
 	public void test5() throws LexicalException {
@@ -262,10 +338,12 @@ class ExampleLexerTests implements PLPTokenKinds {
 		}
 
 	}
+	
+
 	@Test
-	public void test9() throws LexicalException {
-		String input ="""
-				a:INT = 88888888888888888888888888888888888888888888888888888888888;
+	public void test13() throws LexicalException {
+		String input = """
+				"This is a string""And another string"
 				""";
 
 		IPLPLexer lexer = getLexer(input);
@@ -273,9 +351,121 @@ class ExampleLexerTests implements PLPTokenKinds {
 		{
 			IPLPToken token = lexer.nextToken();
 			Kind kind = token.getKind();
-			assertEquals(kind, Kind.EOF);
+			assertEquals(kind, Kind.STRING_LITERAL);
+			String text = token.getText();
+			assertEquals(text, "\"This is a string\"");
+		}
+		{
+			IPLPToken token = lexer.nextToken();
+			Kind kind = token.getKind();
+			assertEquals(kind, Kind.STRING_LITERAL);
+			String text = token.getText();
+			assertEquals(text, "\"And another string\"");
 		}
 
 	}
+	@Test
+	public void test14() throws LexicalException {
+		String input = """
+				abc = 'abc"def'
+				""";
+
+		IPLPLexer lexer = getLexer(input);
+
+		{
+			IPLPToken token = lexer.nextToken();
+			Kind kind = token.getKind();
+			assertEquals(kind, Kind.IDENTIFIER);
+			String text = token.getText();
+			assertEquals(text, "abc");
+		}
+		{
+			IPLPToken token = lexer.nextToken();
+			Kind kind = token.getKind();
+			assertEquals(kind, Kind.ASSIGN);
+			String text = token.getText();
+			assertEquals(text, "=");
+		}
+		{
+			IPLPToken token = lexer.nextToken();
+			Kind kind = token.getKind();
+			assertEquals(kind, Kind.STRING_LITERAL);
+			String text = token.getText();
+			assertEquals(text, "\'abc\"def\'");
+		}
+
+	}
+	@Test public void test59() throws LexicalException{
+		String input = """
+		a:INT = 88888888888888888888888888888888888888888888888888888888888;
+		""";
+		try{
+		IPLPLexer lexer = getLexer(input);
+		{
+		IPLPToken token = lexer.nextToken();
+		Kind kind = token.getKind();
+		assertEquals(Kind.IDENTIFIER,kind,"at "  + token.getLine() + ":" + token.getCharPositionInLine());
+		int line = token.getLine();
+		assertEquals(1,line,"line position error for token"+"a");
+		int charPositionInLine = token.getCharPositionInLine();
+		assertEquals(0,charPositionInLine,"char position error for token"+"a");
+		String text = token.getText();
+		assertEquals("a",text,"at "  + token.getLine() + ":" + token.getCharPositionInLine());
+		}
+		{
+		IPLPToken token = lexer.nextToken();
+		Kind kind = token.getKind();
+		assertEquals(Kind.COLON,kind,"at "  + token.getLine() + ":" + token.getCharPositionInLine());
+		int line = token.getLine();
+		assertEquals(1,line,"line position error for token"+":");
+		int charPositionInLine = token.getCharPositionInLine();
+		assertEquals(1,charPositionInLine,"char position error for token"+":");
+		String text = token.getText();
+		assertEquals(":",text,"at "  + token.getLine() + ":" + token.getCharPositionInLine());
+		}
+		{
+		IPLPToken token = lexer.nextToken();
+		Kind kind = token.getKind();
+		assertEquals(Kind.KW_INT,kind,"at "  + token.getLine() + ":" + token.getCharPositionInLine());
+		int line = token.getLine();
+		assertEquals(1,line,"line position error for token"+"INT");
+		int charPositionInLine = token.getCharPositionInLine();
+		assertEquals(2,charPositionInLine,"char position error for token"+"INT");
+		String text = token.getText();
+		assertEquals("INT",text,"at "  + token.getLine() + ":" + token.getCharPositionInLine());
+		}
+		{
+		IPLPToken token = lexer.nextToken();
+		Kind kind = token.getKind();
+		assertEquals(Kind.ASSIGN,kind,"at "  + token.getLine() + ":" + token.getCharPositionInLine());
+		int line = token.getLine();
+		assertEquals(1,line,"line position error for token"+"=");
+		int charPositionInLine = token.getCharPositionInLine();
+		assertEquals(6,charPositionInLine,"char position error for token"+"=");
+		String text = token.getText();
+		assertEquals("=",text,"at "  + token.getLine() + ":" + token.getCharPositionInLine());
+		}
+		assertThrows(LexicalException.class, ()-> {
+			IPLPToken token = lexer.nextToken();
+			});
+		}
+			catch(LexicalException e) {
+			    System.out.println("Unexpected LexicalException:  " + e.getMessage());
+			    System.out.println("input=");
+			    System.out.println(input);
+			    System.out.println("-----------");
+			    throw e;
+		    }
+			catch(Throwable e) {
+				System.out.println(e.getClass() + "  "  + e.getMessage());
+				System.out.println("input=");
+				System.out.println(input);
+				System.out.println("-----------");
+			    throw e;
+		    }
+
+	}
+		
+
 
 }
