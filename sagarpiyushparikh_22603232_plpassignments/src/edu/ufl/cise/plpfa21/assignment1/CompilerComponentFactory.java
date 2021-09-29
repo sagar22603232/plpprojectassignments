@@ -33,10 +33,6 @@ public class CompilerComponentFactory extends CreateLexer implements IPLPLexer  
 	   	 //Your parser will create a lexer.
 		 
 		 getLexer(input);
-		 for(CreateToken t:tokens) {
-			 System.out.println(t.getKind());
-			 System.out.println(t.getText());
-		 }
 		 CreateParser parser = new CreateParser(tokens, input);
 		 return parser;
 	    }

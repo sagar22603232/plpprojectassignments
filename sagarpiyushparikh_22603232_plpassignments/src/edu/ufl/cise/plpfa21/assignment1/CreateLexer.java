@@ -264,8 +264,6 @@ public class CreateLexer extends CreateToken implements IPLPToken {
 							inLinechar = inLinechar + 1;
 						}
 						case '>' -> {
-							System.out.println(">");
-							System.out.println(inLinechar);
 							tokens.add(new CreateToken(Kind.GT, indexPosition, inputLength, linePostion,
 									inLinechar, input.charAt(indexPosition), input.charAt(indexPosition), albha));
 							indexPosition = indexPosition + 1;
@@ -393,22 +391,16 @@ public class CreateLexer extends CreateToken implements IPLPToken {
 
 										albha = albha + Character.toString(givenInput.charAt(charposition));
 										charposition = charposition + 1;
-										System.out.println("albha");
-										System.out.println(albha);
 										inLinechar = inLinechar + 1;
 									}	
 								}
 							}
 							if (keyWords.containsKey(albha)) {
 								indexPosition = charposition;
-								System.out.println("Char");
-								System.out.println(charatpostion);
 								tokens.add(new CreateToken(keyWords.get(albha), indexPosition, inputLength, linePostion,
 										charatpostion, input.charAt(charposition), input.charAt(charposition), albha));
 							} else {
 								indexPosition = charposition;
-								System.out.println("Char");
-								System.out.println(charatpostion);
 								tokens.add(new CreateToken(Kind.IDENTIFIER, indexPosition, inputLength, linePostion,
 										charatpostion, input.charAt(charposition), input.charAt(charposition), albha));
 							}
@@ -416,9 +408,7 @@ public class CreateLexer extends CreateToken implements IPLPToken {
 						}
 						albha = "";
 						startLinePostion = startLinePostion + 1;
-						//inLinechar = inLinechar +1;
 						charcount = charposition;
-						//linecount = 0;
 						state = State.START;
 						chdict.setLength(0);
 					}
@@ -471,8 +461,6 @@ public class CreateLexer extends CreateToken implements IPLPToken {
 						albha = "";
 						startLinePostion = startLinePostion + 1;
 						charcount = charposition;
-						//inLinechar = inLinechar +1;
-						//linecount = 0;
 						state = State.START;
 						chdict.setLength(0);
 
@@ -509,18 +497,11 @@ public class CreateLexer extends CreateToken implements IPLPToken {
 								input.charAt(indexPosition), input.charAt(indexPosition), "=="));
 						indexPosition = indexPosition + 1;
 						startLinePostion = startLinePostion + 1;
-						System.out.println("Line 518 equals");
-						System.out.println(inLinechar);
 						inLinechar = inLinechar + 2;
 						state = State.START;
 					} else {
-						System.out.println("=");
-						System.out.println(inLinechar);
 						tokens.add(new CreateToken(Kind.ASSIGN, indexPosition, inputLength, linePostion, inLinechar,
 								'=', '=', albha));
-						
-						System.out.println("Line 518");
-						System.out.println(input.charAt(indexPosition));
 						startLinePostion = startLinePostion + 1;
 						inLinechar = inLinechar + 1;
 						state = State.START;
