@@ -63,11 +63,12 @@ public class ValidateParser {
 			consume();
 			this.tokenCount = this.tokenCount + 1;
 			checkofNameDef();
-			if (this.token.getKind() == Kind.SEMI) {
-				checkofSemicolon();
-			} else {
+			if (this.token.getKind() == Kind.ASSIGN) {
 				consume();
 				this.tokenCount = this.tokenCount + 1;
+				checkofExpression();
+				checkofSemicolon();
+			} else {
 				checkofSemicolon();
 			}
 			return this.token;
