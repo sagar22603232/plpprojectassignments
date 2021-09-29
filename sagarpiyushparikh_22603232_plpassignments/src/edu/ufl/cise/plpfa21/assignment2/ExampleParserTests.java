@@ -105,6 +105,31 @@ class ExampleParserTests {
 		""";
 		syntaxErrorParse(input,2,19);
 		}
+		//This input has a syntax error at line 2, position 19.
+				@Test public void test11()  {
+				String input = """
+				FUN func() DO
+				IF x>0 && y>0 && Z>10
+				DO
+				x=x+y+z+a;
+				END
+				END
+				""";
+				noErrorParse(input);
+				}
+				//This input has a syntax error at line 2, position 19.
+				@Test public void test12()  {
+				String input = """
+				FUN func() DO
+				SWITCH x
+				CASE x: RETURN x;
+				CASE y: (a(TRUE,FALSE));
+				DEFAULT LET abc =a[1234];
+				END
+				END
+				""";
+				noErrorParse(input);
+				}
 
 //		//This input has a syntax error at line 2, position 19.
 //		@Test public void test8()  {
