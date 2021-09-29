@@ -1,7 +1,7 @@
 package edu.ufl.cise.plpfa21.assignment1;
 import java.util.ArrayList;
 import edu.ufl.cise.plpfa21.assignment2.IPLPParser;
-
+import edu.ufl.cise.plpfa21.assignment2.CreateParser;
 public class CompilerComponentFactory extends CreateLexer implements IPLPLexer  {
 	static ArrayList<CreateToken> tokens;
 	static IPLPLexer singletoken;
@@ -33,6 +33,11 @@ public class CompilerComponentFactory extends CreateLexer implements IPLPLexer  
 	   	 //Your parser will create a lexer.
 		 
 		 getLexer(input);
+//		 for(CreateToken t:tokens) {
+//			 System.out.println(t.getKind());
+//			 System.out.println(t.getText());
+//			 
+//		 }
 		 CreateParser parser = new CreateParser(tokens, input);
 		 return parser;
 	    }

@@ -141,14 +141,34 @@ class ExampleParserTests {
 //		}
 //
 //	       //This input has a syntax error at line 2, position 19.
-//			@Test public void test9()  {
-//			String input = """
-//			FUN func(a :INT, b: STRING, c :BOOLEAN) DO
-//			END
-//			""";
-//			noErrorParse(input);
-//			}
+		@Test public void test9()  {
+		String input = """
+		FUN func(a :INT, b: STRING, c :BOOLEAN) DO
+		IF x>0 && y>0 && Z>10
+				DO
+				x=x+y+z+a;
+				END
+							END
+		""";
+		noErrorParse(input);
+		}
+		
 
+
+		//This input has a syntax error at line 2, position 19.
+		@Test public void test10()  {
+		String input = """
+		FUN func() DO
+		IF x>0 || y!=0 && Z>10
+		DO
+		x=100;
+		y=20/30-6;
+		VAR a;
+		END
+		END
+		""";
+		syntaxErrorParse(input,6,0);
+		}
 
 	
 

@@ -1,9 +1,8 @@
-package edu.ufl.cise.plpfa21.assignment1;
-
-import java.util.ArrayList;
-
+package edu.ufl.cise.plpfa21.assignment2;
+import edu.ufl.cise.plpfa21.assignment1.CreateToken;
+import edu.ufl.cise.plpfa21.assignment1.IPLPToken;
 import edu.ufl.cise.plpfa21.assignment1.PLPTokenKinds.Kind;
-import edu.ufl.cise.plpfa21.assignment2.SyntaxException;
+import java.util.ArrayList;
 
 public class ValidateParser {
 	IPLPToken token;
@@ -113,6 +112,7 @@ public class ValidateParser {
 							checkofNameDef();
 						}
 					}
+					checkofFunctionType();
 					return this.token;
 
 				}
@@ -255,7 +255,7 @@ public class ValidateParser {
 	}
 	
 	public IPLPToken checkofBlock() throws SyntaxException {
-		while(this.token.getKind()!= Kind.KW_END || this.token.getKind()!= Kind.SEMI) {
+		while(this.token.getKind()!= Kind.KW_END ) {
 			switch(this.token.getKind()) {
 			case KW_LET ->{
 				consume();
@@ -294,11 +294,11 @@ public class ValidateParser {
 				this.tokenCount = this.tokenCount + 1;
 				checkofExpression();
 				checkofDo();
-				consume();
-				this.tokenCount = this.tokenCount + 1;
-				checkofBlock();
-				consume();
-				this.tokenCount = this.tokenCount + 1;
+				while(this.token.getKind()!=Kind.KW_END) {
+					consume();
+					this.tokenCount = this.tokenCount + 1;
+					checkofBlock();	
+				}
 				checkofEnd();
 				return this.token;
 			}
@@ -517,7 +517,7 @@ public IPLPToken checkofSwitch() throws SyntaxException{
 		if (this.count >= tokens.size()) {
 
 		} else {
-			if (this.tokens.get(this.count).kind == Kind.ERROR) {
+			if (this.tokens.get(this.count).getKind() == Kind.ERROR) {
 
 				throw new SyntaxException(token.getText(), token.getLine(), token.getCharPositionInLine());
 			} else {
