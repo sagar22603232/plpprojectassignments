@@ -85,8 +85,7 @@ public class ValidateParser {
 			checkofEqual();
 			consume();
 			this.tokenCount = this.tokenCount + 1;
-			consume();
-			this.tokenCount = this.tokenCount + 1;
+			checkofExpression();
 			checkofSemicolon();
 			return this.token;
 		}
