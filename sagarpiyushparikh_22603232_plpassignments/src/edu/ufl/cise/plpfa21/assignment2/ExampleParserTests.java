@@ -120,17 +120,41 @@ class ExampleParserTests {
 				//This input has a syntax error at line 2, position 19.
 				@Test public void test12()  {
 				String input = """
-				FUN func() DO
-				SWITCH x
-				CASE x: RETURN x;
-				CASE y: (a(TRUE,FALSE));
-				DEFAULT LET abc =a[1234];
+				FUN func(): BOOLEAN DO
+				SWITCH condition
+				CASE 1: RETURN TRUE;
+				CASE Hellow: LET name= "world";
+				CASE 2: (work(TRUE,FALSE));
+				DEFAULT LET check =num[200];
+				END
+				IF a>0 &&
+				b<0 || z==10
+				DO
+				a=a*b-20;
 				END
 				END
 				""";
 				noErrorParse(input);
 				}
-
+				//This input has a syntax error at line 2, position 19.
+				@Test public void test13()  {
+				String input = """
+				FUN func() DO
+				SWITCH condition
+				CASE 1: RETURN TRUE;
+				CASE Hellow: LET name= "world";
+				CASE 2: (work(TRUE,FALSE));
+				DEFAULT LET check =num[200];
+				END
+				IF a>0 &&
+				b<0 || z==10
+				DO
+				a=a*b-20;
+				END
+				END
+				""";
+				noErrorParse(input);
+				}
 		//This input has a syntax error at line 2, position 19.
 		@Test public void test8()  {
 		String input = """
