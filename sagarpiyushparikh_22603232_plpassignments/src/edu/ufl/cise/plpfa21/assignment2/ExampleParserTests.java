@@ -151,6 +151,7 @@ class ExampleParserTests {
 				DO
 				a=a*b-20;
 				END
+				RETURN x*y;
 				END
 				""";
 				noErrorParse(input);

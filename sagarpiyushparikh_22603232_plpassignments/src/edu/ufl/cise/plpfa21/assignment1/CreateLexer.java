@@ -540,16 +540,30 @@ public class CreateLexer extends CreateToken implements IPLPToken {
 				}
 				case StringLiteralForSingleQuote -> {
 					while (charposition <= givenInput.length()) {
+						if(givenInput.charAt(charposition) == '\n' || givenInput.charAt(charposition) == '\r') {
+							
+							albha = albha +'\n';
+							charposition = charposition + 1;
+							inLinechar =  inLinechar  + 1;
+						}
+						if(givenInput.charAt(charposition) == '\t') {
+							albha = albha +'\t';
+							charposition = charposition + 1;
+							inLinechar =  inLinechar  + 1;
+						}
 						if (givenInput.charAt(charposition) == '\'') {
 							break;
 						} else {
 							albha = albha + Character.toString(givenInput.charAt(charposition));
 							charposition = charposition + 1;
+							inLinechar =  inLinechar  + 1;
 						}
+						
 					}
+					
 					indexPosition = charposition+1;
 					albha = albha + '\'';
-					tokens.add(new CreateToken(Kind.STRING_LITERAL, indexPosition, inputLength, linePostion, spacecount,
+					tokens.add(new CreateToken(Kind.STRING_LITERAL, indexPosition, inputLength, linePostion, inLinechar,
 							input.charAt(charposition), input.charAt(charposition), albha));
 					albha = "";
 					startLinePostion = startLinePostion + 1;
@@ -560,16 +574,29 @@ public class CreateLexer extends CreateToken implements IPLPToken {
 				}
 				case StringLiteralForDoubleQuote -> {
 					while (charposition <= givenInput.length()) {
+						if(givenInput.charAt(charposition) == '\n' || givenInput.charAt(charposition) == '\r') {
+							
+							albha = albha +'\n';
+							charposition = charposition + 1;
+							inLinechar =  inLinechar  + 1;
+						}
+						if(givenInput.charAt(charposition) == '\t') {
+							albha = albha +'\t';
+							charposition = charposition + 1;
+							inLinechar =  inLinechar  + 1;
+						}
 						if (givenInput.charAt(charposition) == '\"') {
 							break;
 						} else {
 							albha = albha + Character.toString(givenInput.charAt(charposition));
 							charposition = charposition + 1;
+							inLinechar =  inLinechar  + 1;
 						}
+						
 					}
 					indexPosition = charposition+1;
 					albha = albha + '\"';
-					tokens.add(new CreateToken(Kind.STRING_LITERAL, indexPosition, inputLength, linePostion, spacecount,
+					tokens.add(new CreateToken(Kind.STRING_LITERAL, indexPosition, inputLength, linePostion, inLinechar,
 							input.charAt(charposition), input.charAt(charposition), albha));
 					albha = "";
 					startLinePostion = startLinePostion + 1;
