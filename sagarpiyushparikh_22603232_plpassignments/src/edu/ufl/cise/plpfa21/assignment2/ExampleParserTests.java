@@ -68,7 +68,7 @@ class ExampleParserTests {
 
 		@Test public void test3() {
 		String input = """
-		VAL b: BOOLEAN = TRUE;
+		VAL b: BOOLEAN = 	TRUE;
 		""";
 		noErrorParse(input);
 		}
@@ -131,16 +131,16 @@ class ExampleParserTests {
 				noErrorParse(input);
 				}
 
-//		//This input has a syntax error at line 2, position 19.
-//		@Test public void test8()  {
-//		String input = """
-//		FUN func(a) DO
-//		END
-//		""";
-//		noErrorParse(input);
-//		}
-//
-//	       //This input has a syntax error at line 2, position 19.
+		//This input has a syntax error at line 2, position 19.
+		@Test public void test8()  {
+		String input = """
+		FUN func(a) DO
+		END
+		""";
+		noErrorParse(input);
+		}
+
+	       //This input has a syntax error at line 2, position 19.
 		@Test public void test9()  {
 		String input = """
 		FUN func(a :INT, b: STRING, c :BOOLEAN) DO

@@ -343,7 +343,9 @@ class ExampleLexerTests implements PLPTokenKinds {
 	@Test
 	public void test13() throws LexicalException {
 		String input = """
-				"This is a string""And another string"
+				"This is
+				 a string""And another 
+				 string"
 				""";
 
 		IPLPLexer lexer = getLexer(input);
@@ -353,14 +355,16 @@ class ExampleLexerTests implements PLPTokenKinds {
 			Kind kind = token.getKind();
 			assertEquals(kind, Kind.STRING_LITERAL);
 			String text = token.getText();
-			assertEquals(text, "\"This is a string\"");
+			assertEquals(text, "\"This is "
+					+ "a string\"");
 		}
 		{
 			IPLPToken token = lexer.nextToken();
 			Kind kind = token.getKind();
 			assertEquals(kind, Kind.STRING_LITERAL);
 			String text = token.getText();
-			assertEquals(text, "\"And another string\"");
+			assertEquals(text, "\"And another "
+					+ "string\"");
 		}
 
 	}

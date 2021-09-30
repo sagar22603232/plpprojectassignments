@@ -157,20 +157,32 @@ public class ValidateParser {
 				checkofDo();
 				consume();
 				this.tokenCount = this.tokenCount + 1;
-				checkofBlock();
-				consume();
-				this.tokenCount = this.tokenCount + 1;
-				checkofEnd();
-				return this.token;
+				if(this.token.getKind() == Kind.KW_END) {
+					checkofEnd();
+					return this.token;
+				}
+				else {
+					checkofBlock();
+					consume();
+					this.tokenCount = this.tokenCount + 1;
+					checkofEnd();
+					return this.token;	
+				}
 			} else {
 				checkofDo();
 				consume();
 				this.tokenCount = this.tokenCount + 1;
-				checkofBlock();
-				consume();
-				this.tokenCount = this.tokenCount + 1;
-				checkofEnd();
-				return this.token;
+				if(this.token.getKind() == Kind.KW_END) {
+					checkofEnd();
+					return this.token;
+				}
+				else {
+					checkofBlock();
+					consume();
+					this.tokenCount = this.tokenCount + 1;
+					checkofEnd();
+					return this.token;	
+				}
 			}
 		}
 		throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());
