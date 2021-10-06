@@ -82,20 +82,50 @@ class ExampleParserTests {
 		}
 		@Test public void test6() {
 			String input = """
-			VAR a: INT;
-			VAR b: BOOLEAN;
-			VAL x: BOOLEAN = TRUE;
+					VAR A:LIST[LIST[INT]];
+					""";
+			noErrorParse(input);
+			}
+		@Test public void test16() {
+			String input = """
+			VAR c = f();
+			""";
+			noErrorParse(input);
+			}
+		@Test public void test17() {
+			String input = """
+			VAL d = ((a+b)/(c+f()));
+			""";
+			noErrorParse(input);
+			}
+		@Test public void test18() {
+			String input = """
+			VAR A:LIST[INT];
+			""";
+			noErrorParse(input);
+			}
+		@Test public void test19() {
+			String input = """
+			VAL a:LIST[INT] = NIL;
+			""";
+			noErrorParse(input);
+			}
+		@Test public void test20() {
+			String input = """
+			FUN f() : LIST[BOOLEAN]
+DO
+	RETURN NIL;
+END
+			""";
+			noErrorParse(input);
+			}
+		@Test public void test21() {
+			String input = """
+			VAR a:LIST[LIST[]];
 			""";
 			noErrorParse(input);
 			}
 		
-		@Test public void test7() {
-			String input = """
-			VAR a;
-			""";
-			noErrorParse(input);
-			}
-
        //This input has a syntax error at line 2, position 19.
 		@Test public void test5()  {
 		String input = """
@@ -159,21 +189,19 @@ class ExampleParserTests {
 		//This input has a syntax error at line 2, position 19.
 		@Test public void test8()  {
 		String input = """
-		FUN func(a) DO
-		END
+		FUN a(b C:STRING) DO END
 		""";
-		noErrorParse(input);
+		syntaxErrorParse(input,1,8);
 		}
 
 	       //This input has a syntax error at line 2, position 19.
 		@Test public void test9()  {
 		String input = """
-		FUN func(a :INT, b: STRING, c :BOOLEAN) DO
-		IF x>0 && y>0 && Z>10
-				DO
-				x=x+y+z+a;
-				END
-							END
+		FUN g():INT DO RETURN 1; END
+FUN f()
+DO
+   RETURN g();
+   END
 		""";
 		noErrorParse(input);
 		}

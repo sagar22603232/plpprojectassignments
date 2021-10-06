@@ -2,6 +2,7 @@ package edu.ufl.cise.plpfa21.assignment2;
 import edu.ufl.cise.plpfa21.assignment1.CreateToken;
 import edu.ufl.cise.plpfa21.assignment1.IPLPToken;
 import edu.ufl.cise.plpfa21.assignment1.PLPTokenKinds.Kind;
+import edu.ufl.cise.plpfa21.assignment1.LexicalException;
 import java.util.ArrayList;
 
 public class ValidateParser {
@@ -65,7 +66,9 @@ public class ValidateParser {
 			if (this.token.getKind() == Kind.ASSIGN) {
 				consume();
 				this.tokenCount = this.tokenCount + 1;
-				checkofExpression();
+				while(this.token.getKind() != Kind.SEMI) {
+					checkofExpression();
+				}
 				checkofSemicolon();
 			} else {
 				checkofSemicolon();
@@ -83,7 +86,10 @@ public class ValidateParser {
 			checkofEqual();
 			consume();
 			this.tokenCount = this.tokenCount + 1;
-			checkofExpression();
+			while(this.token.getKind() != Kind.SEMI) {
+				checkofExpression();
+				
+			}
 			checkofSemicolon();
 			return this.token;
 		}
@@ -104,13 +110,15 @@ public class ValidateParser {
 					return this.token;
 				} else {
 					while (this.token.getKind() != Kind.RPAREN) {
+						checkofNameDef();
+						if(this.token.getKind()!= Kind.COMMA ||this.token.getKind() == Kind.RPAREN) {
+							break;
+						}
 						if (this.token.getKind() == Kind.COMMA) {
 							consume();
 							this.tokenCount = this.tokenCount + 1;
 							checkofNameDef();
-						} else {
-							checkofNameDef();
-						}
+						} 
 					}
 					checkofFunctionType();
 					return this.token;
@@ -199,34 +207,22 @@ public class ValidateParser {
 			consume();
 			this.tokenCount = this.tokenCount + 1;
 			if (this.token.getKind() == Kind.LSQUARE) {
-				if (this.token.getKind() == Kind.KW_INT || this.token.getKind() == Kind.KW_BOOLEAN
-						|| this.token.getKind() == Kind.KW_STRING) {
+				consume();
+				this.tokenCount = this.tokenCount + 1;
+				while(this.token.getKind() != Kind.RSQUARE) {
+					checkofType();
 					consume();
 					this.tokenCount = this.tokenCount + 1;
-					if (this.token.getKind() == Kind.RSQUARE) {
-						return this.token;
-					} else {
-						throw new SyntaxException(this.token.getText(), this.token.getLine(),
-								this.token.getCharPositionInLine());
-					}
-
-				} else {
-					consume();
-					this.tokenCount = this.tokenCount + 1;
-					if (this.token.getKind() == Kind.RSQUARE) {
-						return this.token;
-					} else {
-						throw new SyntaxException(this.token.getText(), this.token.getLine(),
-								this.token.getCharPositionInLine());
-					}
 				}
-			} else {
-				throw new SyntaxException(this.token.getText(), this.token.getLine(),
-						this.token.getCharPositionInLine());
+				return this.token;
+				} 
 			}
 
-		}
-		throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());
+				throw new SyntaxException(this.token.getText(), this.token.getLine(),
+						this.token.getCharPositionInLine());
+			
+
+		
 	}
 
 	public IPLPToken checkofSemicolon() throws SyntaxException {
@@ -271,7 +267,13 @@ public class ValidateParser {
 					consume();
 					this.tokenCount = this.tokenCount + 1;
 					checkofExpression();
-					checkofSemicolon();
+					checkofDo();
+					while(this.token.getKind()!=Kind.KW_END) {
+						consume();
+						this.tokenCount = this.tokenCount + 1;
+						checkofBlock();	
+					}
+					checkofEnd();
 					return this.token;
 				}
 				break;	
@@ -443,15 +445,18 @@ public class ValidateParser {
 			if(this.token.getKind() == Kind.LPAREN) {
 				consume();
 				this.tokenCount = this.tokenCount + 1;
-				
+				if(this.token.getKind() == Kind.RPAREN) {
+					consume();
+					this.tokenCount = this.tokenCount + 1;
+					return exp;
+				}else {
 					checkofExpression();
 					if(this.token.getKind() == Kind.RPAREN) {
 						consume();
 						this.tokenCount = this.tokenCount + 1;
 						return exp;
-					}
-				
-				
+					}	
+				}	
 			}
 			else {
 				if(this.token.getKind() == Kind.IDENTIFIER) {
@@ -460,6 +465,11 @@ public class ValidateParser {
 					if(this.token.getKind() == Kind.LPAREN) {
 						consume();
 						this.tokenCount = this.tokenCount + 1;
+						if(this.token.getKind() == Kind.RPAREN) {
+							consume();
+							this.tokenCount = this.tokenCount + 1;
+							return exp;
+						}
 						while(this.token.getKind()!= Kind.RPAREN) {
 							checkofExpression();
 							consume();
@@ -524,13 +534,37 @@ public IPLPToken checkofSwitch() throws SyntaxException{
 
 		} else {
 			if (this.tokens.get(this.count).getKind() == Kind.ERROR) {
-
-				throw new SyntaxException(token.getText(), token.getLine(), token.getCharPositionInLine());
+				try {
+					throwAdded();
+				} catch (LexicalException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 			} else {
 				this.token = this.tokens.get(this.count++);
 			}
 		}
 
+	}
+	
+	public IPLPToken throwAdded() throws LexicalException {
+		// TODO Auto-generated method stub
+	try {
+		
+	
+		
+		if (this.tokens.get(this.count).getKind() == Kind.ERROR) {
+			LexicalException lexerror = new LexicalException("Error in character insert", 0,1 );
+			 throw lexerror;
+		}
+		return this.token;
+		
+	}
+	catch(Exception e) {
+		 LexicalException lexerror = new LexicalException("Error in character insert", 0,1 );
+		 throw lexerror;
+	}
 	}
 
 }
