@@ -11,6 +11,7 @@ int posInLine = 1;
 String text;
 String value;
 String input;
+String StringVal = "";
 CreateToken(String input){
 	this.input = input;
 	this.input_Length = input.length();
@@ -74,8 +75,9 @@ public CreateToken (Kind kind,int position_Index, int input_Length,int input_Lin
 	@Override
 	public String getStringValue() {
 		// TODO Auto-generated method stub
-
-		return this.input;
+		StringVal = this.text.replace("\"", "");
+		StringVal = StringVal.replace("\'", "");
+		return StringVal;
 	}
 
 	@Override
