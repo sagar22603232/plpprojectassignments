@@ -153,9 +153,9 @@ END
 				FUN func(): BOOLEAN DO
 				SWITCH condition
 				CASE 1: RETURN TRUE;
-				CASE Hellow: LET name= "world";
+				CASE Hellow: LET  name= "world"DO END
 				CASE 2: (work(TRUE,FALSE));
-				DEFAULT LET check =num[200];
+				DEFAULT LET check =num[200] DO END
 				END
 				IF a>0 &&
 				b<0 || z==10
@@ -172,9 +172,9 @@ END
 				FUN func() DO
 				SWITCH condition
 				CASE 1: RETURN TRUE;
-				CASE Hellow: LET name= "world";
+				CASE Hellow: LET  name= "world"DO END
 				CASE 2: (work(TRUE,FALSE));
-				DEFAULT LET check =num[200];
+				DEFAULT LET check =num[200] DO END
 				END
 				IF a>0 &&
 				b<0 || z==10
@@ -197,11 +197,7 @@ END
 	       //This input has a syntax error at line 2, position 19.
 		@Test public void test9()  {
 		String input = """
-		FUN g():INT DO RETURN 1; END
-FUN f()
-DO
-   RETURN g();
-   END
+		FUN b(a,b,c) DO END
 		""";
 		noErrorParse(input);
 		}
@@ -222,7 +218,17 @@ DO
 		""";
 		syntaxErrorParse(input,6,0);
 		}
-
+		//This input has a syntax error at line 2, position 19.
+				@Test public void test29()  {
+				String input = """
+				FUN g():INT DO RETURN 1; END
+		FUN f()
+		DO
+		   RETURN g();
+		   END
+				""";
+				noErrorParse(input);
+				}
 	
 
 }

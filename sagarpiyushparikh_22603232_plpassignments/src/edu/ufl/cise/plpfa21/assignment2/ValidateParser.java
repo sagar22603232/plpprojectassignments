@@ -1,4 +1,5 @@
 package edu.ufl.cise.plpfa21.assignment2;
+
 import edu.ufl.cise.plpfa21.assignment1.CreateToken;
 import edu.ufl.cise.plpfa21.assignment3.astimpl.*;
 import edu.ufl.cise.plpfa21.assignment1.IPLPToken;
@@ -7,8 +8,9 @@ import edu.ufl.cise.plpfa21.assignment1.LexicalException;
 import java.util.ArrayList;
 import java.util.List;
 
-import  edu.ufl.cise.plpfa21.assignment3.ast.*;
-public class ValidateParser{
+import edu.ufl.cise.plpfa21.assignment3.ast.*;
+
+public class ValidateParser {
 	IPLPToken token;
 	ArrayList<CreateToken> tokens;
 	ExpressionParser exp = new ExpressionParser();
@@ -28,29 +30,30 @@ public class ValidateParser{
 	}
 
 	public IASTNode validateSingleParse(String message) throws SyntaxException {
-		if(this.token.getKind() == Kind.EOF) {
-			return new Program__(this.token.getLine(),this.token.getCharPositionInLine(),this.token.getText(), declarationsList);
-			
-		}else {
+		if (this.token.getKind() == Kind.EOF) {
+			return new Program__(this.token.getLine(), this.token.getCharPositionInLine(), this.token.getText(),
+					declarationsList);
+
+		} else {
 			while (this.tokenCount < this.tokens.size()) {
 				switch (this.tokens.get(this.tokenCount).getKind()) {
 				case KW_VAR -> {
 					System.out.println("Hello World");
 					this.declarationsList.add(checkofVariable());
-					
+
 				}
 				case KW_VAL -> {
 					System.out.println("Hello World");
 					this.declarationsList.add(checkofVal());
-					
+
 				}
 				case EOF -> {
 					checkofEOF();
-					
+
 				}
 				case KW_FUN -> {
 					this.declarationsList.add(checkofFunc());
-					
+
 				}
 				default -> {
 					break;
@@ -58,9 +61,10 @@ public class ValidateParser{
 				}
 				consume();
 				this.tokenCount = this.tokenCount + 1;
-			}	
-			return new Program__(this.token.getLine(),this.token.getCharPositionInLine(),this.token.getText(), declarationsList);
-			
+			}
+			return new Program__(this.token.getLine(), this.token.getCharPositionInLine(), this.token.getText(),
+					declarationsList);
+
 		}
 	}
 
@@ -73,51 +77,54 @@ public class ValidateParser{
 	}
 
 	public MutableGlobal__ checkofVariable() throws SyntaxException {
-		IPLPToken firstToken  =this.token;
+		IPLPToken firstToken = this.token;
 		IExpression expNode = null;
+		consume();
+		this.tokenCount = this.tokenCount + 1;
+		INameDef nameDefNode = checkofNameDef();
+		if (this.token.getKind() == Kind.ASSIGN) {
 			consume();
 			this.tokenCount = this.tokenCount + 1;
-			INameDef nameDefNode  = checkofNameDef();
-			if (this.token.getKind() == Kind.ASSIGN) {
-				consume();
-				this.tokenCount = this.tokenCount + 1;
-				while(this.token.getKind() != Kind.SEMI) {
-					expNode = checkofExpression();
-				}
-				checkofSemicolon();
-			} else {
-				checkofSemicolon();
+			while (this.token.getKind() != Kind.SEMI) {
+				expNode = checkofExpression();
 			}
-			return new MutableGlobal__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),nameDefNode, expNode);
+			checkofSemicolon();
+		} else {
+			checkofSemicolon();
+		}
+		return new MutableGlobal__(firstToken.getLine(), firstToken.getCharPositionInLine(), firstToken.getText(),
+				nameDefNode, expNode);
 	}
 
 	public ImmutableGlobal__ checkofVal() throws SyntaxException {
-		IPLPToken firstToken  =this.token;
+		IPLPToken firstToken = this.token;
 		IExpression expNode = null;
-			consume();
-			this.tokenCount = this.tokenCount + 1;
-			INameDef nameDefNode  = checkofNameDef();
-			checkofEqual();
-			consume();
-			this.tokenCount = this.tokenCount + 1;
-			while(this.token.getKind() != Kind.SEMI) {
-				expNode = checkofExpression();
-				
-			}
-			checkofSemicolon();
-			System.out.println("Line 103");
-			return new ImmutableGlobal__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),nameDefNode,expNode);
-		
+		consume();
+		this.tokenCount = this.tokenCount + 1;
+		INameDef nameDefNode = checkofNameDef();
+		checkofEqual();
+		consume();
+		this.tokenCount = this.tokenCount + 1;
+		while (this.token.getKind() != Kind.SEMI) {
+			expNode = checkofExpression();
+
+		}
+		checkofSemicolon();
+		System.out.println("Line 103");
+		return new ImmutableGlobal__(firstToken.getLine(), firstToken.getCharPositionInLine(), firstToken.getText(),
+				nameDefNode, expNode);
+
 	}
 
 	public FunctionDeclaration___ checkofFunc() throws SyntaxException {
-		IPLPToken firstToken  =this.token;
+		IPLPToken firstToken = this.token;
 		IType typeNode;
 		IBlock blockNode;
 		consume();
 		this.tokenCount = this.tokenCount + 1;
 		if (this.token.getKind() == Kind.IDENTIFIER) {
-			IIdentifier name = new Identifier__(this.token.getLine(),this.token.getCharPositionInLine(), this.token.getText(),this.token.getStringValue());
+			IIdentifier name = new Identifier__(this.token.getLine(), this.token.getCharPositionInLine(),
+					this.token.getText(), this.token.getStringValue());
 			consume();
 			this.tokenCount = this.tokenCount + 1;
 			if (this.token.getKind() == Kind.LPAREN) {
@@ -125,24 +132,61 @@ public class ValidateParser{
 				this.tokenCount = this.tokenCount + 1;
 				if (this.token.getKind() == Kind.RPAREN) {
 					typeNode = checkofFunctionType();
-					blockNode = checkforBlock();
-					return new FunctionDeclaration___(firstToken.getLine(), firstToken.getCharPositionInLine(), firstToken.getText(), name, null, typeNode,blockNode);
+					checkofDo();
+					consume();
+					this.tokenCount = this.tokenCount + 1;
+					if (this.token.getKind() == Kind.KW_END) {
+						return new FunctionDeclaration___(firstToken.getLine(), firstToken.getCharPositionInLine(),
+								firstToken.getText(), name, null, typeNode, null);
+					} else {
+						blockNode = checkforBlock();
+						return new FunctionDeclaration___(firstToken.getLine(), firstToken.getCharPositionInLine(),
+								firstToken.getText(), name, null, typeNode, blockNode);
+					}
 				} else {
 					while (this.token.getKind() != Kind.RPAREN) {
 						this.funArgs.add(checkofNameDef());
-						if(this.token.getKind()!= Kind.COMMA ||this.token.getKind() == Kind.RPAREN) {
+						System.out.println("Line 141" + this.token.getText());
+						if (this.token.getKind() != Kind.COMMA || this.token.getKind() == Kind.RPAREN) {
 							break;
 						}
 						if (this.token.getKind() == Kind.COMMA) {
 							consume();
 							this.tokenCount = this.tokenCount + 1;
+							System.out.println("Line 148" + this.token.getText());
 							this.funArgs.add(checkofNameDef());
-						} 
+							consume();
+							this.tokenCount = this.tokenCount + 1;
+						}
 					}
-					typeNode = checkofFunctionType();
-					blockNode = checkforBlock();
-					return new FunctionDeclaration___(firstToken.getLine(), firstToken.getCharPositionInLine(), firstToken.getText(), name, this.funArgs, typeNode,blockNode);
-
+					System.out.println("Line 150" + this.token.getText());
+					if (this.token.getKind() == Kind.KW_DO) {
+						System.out.println("Line 151" + this.token.getText());
+						checkofDo();
+						consume();
+						this.tokenCount = this.tokenCount + 1;
+						if (this.token.getKind() == Kind.KW_END) {
+							return new FunctionDeclaration___(firstToken.getLine(), firstToken.getCharPositionInLine(),
+									firstToken.getText(), name, null, null, null);
+						} else {
+							blockNode = checkforBlock();
+							return new FunctionDeclaration___(firstToken.getLine(), firstToken.getCharPositionInLine(),
+									firstToken.getText(), name, null, null, blockNode);
+						}
+					} else {
+						typeNode = checkofFunctionType();
+						checkofDo();
+						consume();
+						this.tokenCount = this.tokenCount + 1;
+						if (this.token.getKind() == Kind.KW_END) {
+							return new FunctionDeclaration___(firstToken.getLine(), firstToken.getCharPositionInLine(),
+									firstToken.getText(), name, null, typeNode, null);
+						} else {
+							blockNode = checkforBlock();
+							return new FunctionDeclaration___(firstToken.getLine(), firstToken.getCharPositionInLine(),
+									firstToken.getText(), name, null, typeNode, blockNode);
+						}
+					}
 				}
 			}
 			throw new SyntaxException(token.getText(), token.getLine(), token.getCharPositionInLine());
@@ -151,26 +195,30 @@ public class ValidateParser{
 	}
 
 	public INameDef checkofNameDef() throws SyntaxException {
-			IPLPToken firstToken  =this.token;
-			IIdentifier identifierNode = checkofIDENTIFIER();;
-			consume();
-			this.tokenCount = this.tokenCount + 1;
-			if (this.token.getKind() == Kind.SEMI) {
-				return new NameDef__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),identifierNode,null);
+		IPLPToken firstToken = this.token;
+		IIdentifier identifierNode = checkofIDENTIFIER();
+		;
+		consume();
+		this.tokenCount = this.tokenCount + 1;
+		if (this.token.getKind() == Kind.SEMI) {
+			return new NameDef__(firstToken.getLine(), firstToken.getCharPositionInLine(), firstToken.getText(),
+					identifierNode, null);
+		} else {
+			if (this.token.getKind() == Kind.COLON) {
+				consume();
+				this.tokenCount = this.tokenCount + 1;
+
+				IType typeNode = checkofType();
+				consume();
+				this.tokenCount = this.tokenCount + 1;
+				return new NameDef__(firstToken.getLine(), firstToken.getCharPositionInLine(), firstToken.getText(),
+						identifierNode, typeNode);
 			} else {
-				if (this.token.getKind() == Kind.COLON) {
-					consume();
-					this.tokenCount = this.tokenCount + 1;
-					
-					IType typeNode  = checkofType();
-					consume();
-					this.tokenCount = this.tokenCount + 1;
-					return new NameDef__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),identifierNode,typeNode);
-				} else {
-					return new NameDef__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),identifierNode,null);
-				}
+				return new NameDef__(firstToken.getLine(), firstToken.getCharPositionInLine(), firstToken.getText(),
+						identifierNode, null);
 			}
-		
+		}
+
 	}
 
 	public IType checkofFunctionType() throws SyntaxException {
@@ -180,49 +228,36 @@ public class ValidateParser{
 			if (this.token.getKind() == Kind.COLON) {
 				consume();
 				this.tokenCount = this.tokenCount + 1;
-				IType typeNode  = checkofType();
+				IType typeNode = checkofType();
 				consume();
 				this.tokenCount = this.tokenCount + 1;
-		
-					return typeNode;	
+
+				return typeNode;
 			} else {
-			
+
 				return null;
 			}
 		}
 		throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());
 	}
-	public IBlock checkforBlock() throws SyntaxException{
-		 List<IStatement> statements = null;
-		checkofDo();
-		consume();
-		this.tokenCount = this.tokenCount + 1;
-		IPLPToken firstToken  =this.token;
-		while(this.token.getKind() !=Kind.KW_END)
-		{
+
+	public IBlock checkforBlock() throws SyntaxException {
+		IPLPToken firstToken = this.token;
+		ArrayList<IStatement> statements = new ArrayList<IStatement>();
+		while (this.token.getKind() != Kind.KW_END) {
 			statements.add(checkofBlock());
 			consume();
 			this.tokenCount = this.tokenCount + 1;
 		}
-			checkofEnd();
-			return new Block__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),statements);
+		checkofEnd();
+		return new Block__(firstToken.getLine(), firstToken.getCharPositionInLine(), firstToken.getText(), statements);
 	}
-	public IBlock checkforDefaultBlock() throws SyntaxException{
-		 List<IStatement> statements = null;
-		IPLPToken firstToken  =this.token;
-		while(this.token.getKind() !=Kind.KW_END)
-		{
-			statements.add(checkofBlock());
-			consume();
-			this.tokenCount = this.tokenCount + 1;
-		}
-			return new Block__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),statements);
-	}
-	public IBlock checkforCaseBlock() throws SyntaxException{
-		 List<IStatement> statements = null;
-		IPLPToken firstToken  =this.token;
-			statements.add(checkofBlock());
-			return new Block__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),statements);
+
+	public IBlock checkforCaseBlock() throws SyntaxException {
+		IPLPToken firstToken = this.token;
+		ArrayList<IStatement> statements = new ArrayList<IStatement>();
+		statements.add(checkofBlock());
+		return new Block__(firstToken.getLine(), firstToken.getCharPositionInLine(), firstToken.getText(), statements);
 	}
 
 	public IPLPToken checkofEqual() throws SyntaxException {
@@ -231,46 +266,52 @@ public class ValidateParser{
 		}
 		throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());
 	}
-	 public  IIdentifier checkofIDENTIFIER() throws SyntaxException {
-			if (this.token.getKind() == Kind.IDENTIFIER) {
-				return new Identifier__(this.token.getLine(),this.token.getCharPositionInLine(),this.token.getText(),this.token.getText());
-			}
-			throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());
+
+	public IIdentifier checkofIDENTIFIER() throws SyntaxException {
+		if (this.token.getKind() == Kind.IDENTIFIER) {
+			return new Identifier__(this.token.getLine(), this.token.getCharPositionInLine(), this.token.getText(),
+					this.token.getText());
 		}
+		throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());
+	}
 
 	public IType checkofType() throws SyntaxException {
-		switch(this.token.getKind()) {
-		case KW_INT->{
-			return new PrimitiveType__(this.token.getLine(),this.token.getCharPositionInLine(),this.token.getText(),IType.TypeKind.INT);
+		switch (this.token.getKind()) {
+		case KW_INT -> {
+			return new PrimitiveType__(this.token.getLine(), this.token.getCharPositionInLine(), this.token.getText(),
+					IType.TypeKind.INT);
 		}
-		case KW_BOOLEAN->{
-			return new PrimitiveType__(this.token.getLine(),this.token.getCharPositionInLine(),this.token.getText(),IType.TypeKind.BOOLEAN);
+		case KW_BOOLEAN -> {
+			return new PrimitiveType__(this.token.getLine(), this.token.getCharPositionInLine(), this.token.getText(),
+					IType.TypeKind.BOOLEAN);
 		}
-		case KW_STRING->{
-			return new PrimitiveType__(this.token.getLine(),this.token.getCharPositionInLine(),this.token.getText(),IType.TypeKind.STRING);
+		case KW_STRING -> {
+			return new PrimitiveType__(this.token.getLine(), this.token.getCharPositionInLine(), this.token.getText(),
+					IType.TypeKind.STRING);
 		}
-		case KW_LIST->{
-			IPLPToken firstToken  =this.token;
+		case KW_LIST -> {
+			IPLPToken firstToken = this.token;
 			IType typeNode = null;
 			consume();
 			this.tokenCount = this.tokenCount + 1;
 			if (this.token.getKind() == Kind.LSQUARE) {
 				consume();
 				this.tokenCount = this.tokenCount + 1;
-				while(this.token.getKind() != Kind.RSQUARE) {
+				while (this.token.getKind() != Kind.RSQUARE) {
 					typeNode = checkofType();
 					consume();
 					this.tokenCount = this.tokenCount + 1;
 				}
-				return new ListType__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),typeNode);
-				} 
+				return new ListType__(firstToken.getLine(), firstToken.getCharPositionInLine(), firstToken.getText(),
+						typeNode);
+			}
 		}
-		default->{
-			throw new SyntaxException(this.token.getText(), this.token.getLine(),
-					this.token.getCharPositionInLine());	
+		default -> {
+			throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());
 		}
 		}
-		return new PrimitiveType__(this.token.getLine(),this.token.getCharPositionInLine(),this.token.getText(),IType.TypeKind.INT);
+		return new PrimitiveType__(this.token.getLine(), this.token.getCharPositionInLine(), this.token.getText(),
+				IType.TypeKind.INT);
 	}
 
 	public IPLPToken checkofSemicolon() throws SyntaxException {
@@ -280,6 +321,7 @@ public class ValidateParser{
 		}
 		throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());
 	}
+
 	public IPLPToken checkofColon() throws SyntaxException {
 
 		if (this.token.getKind() == Kind.COLON) {
@@ -303,345 +345,383 @@ public class ValidateParser{
 		}
 		throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());
 	}
-	
+
 	public IStatement checkofBlock() throws SyntaxException {
-		while(this.token.getKind()!= Kind.KW_END ) {
-			switch(this.token.getKind()) {
-			case KW_LET ->{
-				IPLPToken firstToken  =this.token;
+		while (this.token.getKind() != Kind.KW_END) {
+			switch (this.token.getKind()) {
+			case KW_LET -> {
+				IPLPToken firstToken = this.token;
 				IExpression expNode = null;
 				IBlock blockNode;
 				consume();
 				this.tokenCount = this.tokenCount + 1;
-				INameDef nameDefNode  = checkofNameDef();
-				if(this.token.getKind() == Kind.ASSIGN) {
+				INameDef nameDefNode = checkofNameDef();
+				if (this.token.getKind() == Kind.ASSIGN) {
 					consume();
 					this.tokenCount = this.tokenCount + 1;
 					expNode = checkofExpression();
-					blockNode = checkforBlock();
-					return new LetStatement__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),blockNode,expNode,nameDefNode);
+					checkofDo();
+					consume();
+					this.tokenCount = this.tokenCount + 1;
+					if (this.token.getKind() == Kind.KW_END) {
+						return new LetStatement__(firstToken.getLine(), firstToken.getCharPositionInLine(),
+								firstToken.getText(), null, expNode, nameDefNode);
+					} else {
+						blockNode = checkforBlock();
+						return new LetStatement__(firstToken.getLine(), firstToken.getCharPositionInLine(),
+								firstToken.getText(), blockNode, expNode, nameDefNode);
+					}
+
 				}
-				break;	
+				break;
 			}
-			case KW_SWITCH ->{
-				IPLPToken firstToken  =this.token;
+			case KW_SWITCH -> {
+				IPLPToken firstToken = this.token;
 				IBlock defaultBlockNode = null;
 				consume();
 				this.tokenCount = this.tokenCount + 1;
-				IExpression switchNode  = checkofExpression();
-				while(this.token.getKind()!= Kind.KW_DEFAULT) {
-					checkofSwitch();	
-					}
-				if(this.token.getKind() == Kind.KW_DEFAULT) {
+				IExpression switchNode = checkofExpression();
+				while (this.token.getKind() != Kind.KW_DEFAULT) {
+					checkofSwitch();
+				}
+				if (this.token.getKind() == Kind.KW_DEFAULT) {
 					consume();
 					this.tokenCount = this.tokenCount + 1;
-					defaultBlockNode = checkforDefaultBlock();
+					defaultBlockNode = checkforBlock();
 					checkofEnd();
 				}
-				return new SwitchStatement__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),switchNode, this.branchExpressions,this.blocksExpressions, defaultBlockNode);
-				
+				return new SwitchStatement__(firstToken.getLine(), firstToken.getCharPositionInLine(),
+						firstToken.getText(), switchNode, this.branchExpressions, this.blocksExpressions,
+						defaultBlockNode);
+
 			}
-			case KW_IF ->{
-				IPLPToken firstToken  =this.token;
+			case KW_IF -> {
+				IPLPToken firstToken = this.token;
 				IExpression expNode = null;
 				IBlock blockNode;
 				consume();
 				this.tokenCount = this.tokenCount + 1;
 				expNode = checkofExpression();
-				blockNode = checkforBlock();
-				return new IfStatement__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),expNode,blockNode);	
+				checkofDo();
+				consume();
+				this.tokenCount = this.tokenCount + 1;
+				if (this.token.getKind() == Kind.KW_END) {
+					return new IfStatement__(firstToken.getLine(), firstToken.getCharPositionInLine(),
+							firstToken.getText(), expNode, null);
+				} else {
+					blockNode = checkforBlock();
+					return new IfStatement__(firstToken.getLine(), firstToken.getCharPositionInLine(),
+							firstToken.getText(), expNode, blockNode);
+				}
 			}
-			case KW_WHILE ->{
-				IPLPToken firstToken  =this.token;
+			case KW_WHILE -> {
+				IPLPToken firstToken = this.token;
 				IExpression expNode = null;
 				IBlock blockNode;
 				consume();
 				this.tokenCount = this.tokenCount + 1;
 				expNode = checkofExpression();
-				blockNode = checkforBlock();
-				return new WhileStatement__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),expNode,blockNode);	
+				checkofDo();
+				consume();
+				this.tokenCount = this.tokenCount + 1;
+				if (this.token.getKind() == Kind.KW_END) {
+					return new WhileStatement__(firstToken.getLine(), firstToken.getCharPositionInLine(),
+							firstToken.getText(), expNode, null);
+				} else {
+					blockNode = checkforBlock();
+					return new WhileStatement__(firstToken.getLine(), firstToken.getCharPositionInLine(),
+							firstToken.getText(), expNode, blockNode);
+				}
 			}
-			case KW_RETURN ->{
-				IPLPToken firstToken  =this.token;
+			case KW_RETURN -> {
+				IPLPToken firstToken = this.token;
 				IExpression expNode = null;
 				consume();
 				this.tokenCount = this.tokenCount + 1;
 				expNode = checkofExpression();
 				checkofSemicolon();
-				return new ReturnStatement__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),expNode);	
-				
+				return new ReturnStatement__(firstToken.getLine(), firstToken.getCharPositionInLine(),
+						firstToken.getText(), expNode);
+
 			}
-			default -> {	
-				IPLPToken firstToken  =this.token;
+			default -> {
+				IPLPToken firstToken = this.token;
 				IExpression lefExpNode = checkofExpression();
-				if(this.token.getKind() == Kind.ASSIGN) {
+				if (this.token.getKind() == Kind.ASSIGN) {
 					consume();
 					this.tokenCount = this.tokenCount + 1;
 					IExpression rightExpNode = checkofExpression();
 					checkofSemicolon();
-					return new AssignmentStatement__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),lefExpNode,rightExpNode );
-				}
-				else {
+					return new AssignmentStatement__(firstToken.getLine(), firstToken.getCharPositionInLine(),
+							firstToken.getText(), lefExpNode, rightExpNode);
+				} else {
 					checkofSemicolon();
-					return new AssignmentStatement__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),lefExpNode,null );
+					return new AssignmentStatement__(firstToken.getLine(), firstToken.getCharPositionInLine(),
+							firstToken.getText(), lefExpNode, null);
 				}
 			}
 			}
-			
+
 		}
 		return null;
 	}
-	public IExpression checkofExpression() throws SyntaxException{
+
+	public IExpression checkofExpression() throws SyntaxException {
 		try {
 			return checkofLogicalExpression();
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			throw e;
 		}
 	}
-	public IExpression checkofLogicalExpression() throws SyntaxException{
+
+	public IExpression checkofLogicalExpression() throws SyntaxException {
 		try {
-			IPLPToken firstToken  =this.token;
+			IPLPToken firstToken = this.token;
 			IExpression leftExpressionNode = checkofComparisonExpression();
 			IExpression rightExpressionNode = null;
-			while(this.token.getKind() == Kind.AND || this.token.getKind() == Kind.OR)
-{
-				IPLPToken operand  =this.token;
+			while (this.token.getKind() == Kind.AND || this.token.getKind() == Kind.OR) {
+				IPLPToken operand = this.token;
 				consume();
 				this.tokenCount = this.tokenCount + 1;
 				rightExpressionNode = checkofComparisonExpression();
-				leftExpressionNode = new BinaryExpression__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),leftExpressionNode,rightExpressionNode,operand.getKind());
-			
+				leftExpressionNode = new BinaryExpression__(firstToken.getLine(), firstToken.getCharPositionInLine(),
+						firstToken.getText(), leftExpressionNode, rightExpressionNode, operand.getKind());
+
 			}
-			
-				return leftExpressionNode;
-			
-			
-		}
-		catch(Exception e) {
+
+			return leftExpressionNode;
+
+		} catch (Exception e) {
 			throw e;
 		}
 	}
-	public IExpression checkofComparisonExpression() throws SyntaxException{
+
+	public IExpression checkofComparisonExpression() throws SyntaxException {
 		try {
-			IPLPToken firstToken  =this.token;
+			IPLPToken firstToken = this.token;
 			IExpression leftExpressionNode = checkofAdditiveExpression();
 			IExpression rightExpressionNode = null;
-			if(this.token.getKind() == Kind.LT || 
-			this.token.getKind() == Kind.GT ||
-			this.token.getKind() == Kind.EQUALS ||
-			this.token.getKind() == Kind.NOT_EQUALS
-					)
-{
-				IPLPToken operand  =this.token;
+			if (this.token.getKind() == Kind.LT || this.token.getKind() == Kind.GT
+					|| this.token.getKind() == Kind.EQUALS || this.token.getKind() == Kind.NOT_EQUALS) {
+				IPLPToken operand = this.token;
 				consume();
 				this.tokenCount = this.tokenCount + 1;
-				rightExpressionNode = checkofAdditiveExpression();;
-				leftExpressionNode = new BinaryExpression__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),leftExpressionNode,rightExpressionNode,operand.getKind());
+				rightExpressionNode = checkofAdditiveExpression();
+				;
+				leftExpressionNode = new BinaryExpression__(firstToken.getLine(), firstToken.getCharPositionInLine(),
+						firstToken.getText(), leftExpressionNode, rightExpressionNode, operand.getKind());
 			}
-			System.out.println("line 423"+leftExpressionNode);
-				return leftExpressionNode;
-			
-				
-			
-		}
-		catch(Exception e) {
+			System.out.println("line 423" + leftExpressionNode);
+			return leftExpressionNode;
+
+		} catch (Exception e) {
 			throw e;
 		}
 	}
-	public IExpression checkofAdditiveExpression() throws SyntaxException{
+
+	public IExpression checkofAdditiveExpression() throws SyntaxException {
 		try {
-			IPLPToken firstToken  =this.token;
+			IPLPToken firstToken = this.token;
 			IExpression leftExpressionNode = checkofMultiplicativeExpression();
 			IExpression rightExpressionNode = null;
-			while(this.token.getKind() == Kind.PLUS || this.token.getKind() == Kind.MINUS) {
-				System.out.println("line 438"+leftExpressionNode);
-				IPLPToken operand  =this.token;
-					consume();
-					this.tokenCount = this.tokenCount + 1;
-					System.out.println("line 443"+this.token.getText());
-					rightExpressionNode = checkofMultiplicativeExpression();
-					
-					leftExpressionNode = new BinaryExpression__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),leftExpressionNode,rightExpressionNode,operand.getKind());
-					System.out.println("line 446"+leftExpressionNode);
+			while (this.token.getKind() == Kind.PLUS || this.token.getKind() == Kind.MINUS) {
+				System.out.println("line 438" + leftExpressionNode);
+				IPLPToken operand = this.token;
+				consume();
+				this.tokenCount = this.tokenCount + 1;
+				System.out.println("line 443" + this.token.getText());
+				rightExpressionNode = checkofMultiplicativeExpression();
+
+				leftExpressionNode = new BinaryExpression__(firstToken.getLine(), firstToken.getCharPositionInLine(),
+						firstToken.getText(), leftExpressionNode, rightExpressionNode, operand.getKind());
+				System.out.println("line 446" + leftExpressionNode);
 			}
-			
-				return leftExpressionNode;
-			
-		}
-		catch(Exception e) {
+
+			return leftExpressionNode;
+
+		} catch (Exception e) {
 			throw e;
 		}
 	}
-	public IExpression checkofMultiplicativeExpression() throws SyntaxException{
+
+	public IExpression checkofMultiplicativeExpression() throws SyntaxException {
 		try {
-			IPLPToken firstToken  =this.token;
+			IPLPToken firstToken = this.token;
 			IExpression leftExpressionNode = checkofUnaryExpression();
 			IExpression rightExpressionNode = null;
-			while(this.token.getKind() == Kind.TIMES || this.token.getKind() == Kind.DIV) {
-				System.out.println("line 460"+leftExpressionNode);
-				IPLPToken operand  =this.token;
+			while (this.token.getKind() == Kind.TIMES || this.token.getKind() == Kind.DIV) {
+				System.out.println("line 460" + leftExpressionNode);
+				IPLPToken operand = this.token;
 				consume();
 				this.tokenCount = this.tokenCount + 1;
 				rightExpressionNode = checkofUnaryExpression();
-				leftExpressionNode = new BinaryExpression__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),leftExpressionNode,rightExpressionNode,operand.getKind());
+				leftExpressionNode = new BinaryExpression__(firstToken.getLine(), firstToken.getCharPositionInLine(),
+						firstToken.getText(), leftExpressionNode, rightExpressionNode, operand.getKind());
 			}
-			
-				return leftExpressionNode;
-			
-		}
-		catch(Exception e) {
+
+			return leftExpressionNode;
+
+		} catch (Exception e) {
 			throw e;
 		}
 	}
-	public IExpression checkofUnaryExpression() throws SyntaxException{
+
+	public IExpression checkofUnaryExpression() throws SyntaxException {
 		try {
-			IPLPToken firstToken  =this.token;
+			IPLPToken firstToken = this.token;
 			IExpression singleExpressionNode = null;
-			if(this.token.getKind() == Kind.BANG || this.token.getKind() == Kind.MINUS) {
-				IPLPToken operand  =this.token;
+			if (this.token.getKind() == Kind.BANG || this.token.getKind() == Kind.MINUS) {
+				IPLPToken operand = this.token;
 				consume();
 				this.tokenCount = this.tokenCount + 1;
 				singleExpressionNode = checkofPrimaryExpression();
-				return new UnaryExpression__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),singleExpressionNode,operand.getKind());
-			}
-			else {
+				return new UnaryExpression__(firstToken.getLine(), firstToken.getCharPositionInLine(),
+						firstToken.getText(), singleExpressionNode, operand.getKind());
+			} else {
 				singleExpressionNode = checkofPrimaryExpression();
 				System.out.println("Hi line 453");
 				return singleExpressionNode;
 			}
-			
-		}
-		catch(Exception e) {
+
+		} catch (Exception e) {
 			throw e;
 		}
 	}
-	public IExpression checkofPrimaryExpression() throws SyntaxException{
-		IPLPToken firstToken  =this.token;
-		switch(this.token.getKind()) {
-		case KW_NIL->{
+
+	public IExpression checkofPrimaryExpression() throws SyntaxException {
+		IPLPToken firstToken = this.token;
+		switch (this.token.getKind()) {
+		case KW_NIL -> {
 			consume();
 			this.tokenCount = this.tokenCount + 1;
-			return new NilConstantExpression__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText());
+			return new NilConstantExpression__(firstToken.getLine(), firstToken.getCharPositionInLine(),
+					firstToken.getText());
 		}
-		case KW_TRUE ->{
+		case KW_TRUE -> {
 			consume();
 			this.tokenCount = this.tokenCount + 1;
-			return new BooleanLiteralExpression__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(), true);
+			return new BooleanLiteralExpression__(firstToken.getLine(), firstToken.getCharPositionInLine(),
+					firstToken.getText(), true);
 		}
-		case KW_FALSE ->{
+		case KW_FALSE -> {
 			consume();
 			this.tokenCount = this.tokenCount + 1;
-			return new BooleanLiteralExpression__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(), false);
+			return new BooleanLiteralExpression__(firstToken.getLine(), firstToken.getCharPositionInLine(),
+					firstToken.getText(), false);
 		}
-		case INT_LITERAL->{
+		case INT_LITERAL -> {
 			consume();
 			this.tokenCount = this.tokenCount + 1;
 			System.out.println("Hi line 482");
-			return new IntLiteralExpression__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(), firstToken.getIntValue());
+			return new IntLiteralExpression__(firstToken.getLine(), firstToken.getCharPositionInLine(),
+					firstToken.getText(), firstToken.getIntValue());
 		}
-		case STRING_LITERAL ->{
+		case STRING_LITERAL -> {
 			consume();
 			this.tokenCount = this.tokenCount + 1;
-			System.out.println("line 513 "+this.token.getText());
-			return new StringLiteralExpression__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(), firstToken.getStringValue());
+			System.out.println("line 513 " + this.token.getText());
+			return new StringLiteralExpression__(firstToken.getLine(), firstToken.getCharPositionInLine(),
+					firstToken.getText(), firstToken.getStringValue());
 		}
-		case LPAREN ->{
+		case LPAREN -> {
 			IExpression expNode;
 			consume();
 			this.tokenCount = this.tokenCount + 1;
-			if(this.token.getKind() == Kind.RPAREN) {
+			if (this.token.getKind() == Kind.RPAREN) {
 				consume();
 				this.tokenCount = this.tokenCount + 1;
 				return null;
-			}
-			else {	
+			} else {
 				expNode = checkofExpression();
-				if(this.token.getKind() == Kind.RPAREN) {
+				if (this.token.getKind() == Kind.RPAREN) {
 					consume();
 					this.tokenCount = this.tokenCount + 1;
 					return expNode;
-				}	
-				else {
+				} else {
 					break;
 				}
 			}
 		}
-		case IDENTIFIER->{
-			IIdentifier name;
+		case IDENTIFIER -> {
+			IIdentifier name = new Identifier__(firstToken.getLine(), firstToken.getCharPositionInLine(),
+					firstToken.getText(), firstToken.getText());
+			;
 			ArrayList<IExpression> args = new ArrayList<IExpression>();
-			name = new Identifier__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),firstToken.getText());
 			consume();
 			this.tokenCount = this.tokenCount + 1;
-			if(this.token.getKind() == Kind.LPAREN) {
+			if (this.token.getKind() == Kind.LPAREN) {
 				consume();
 				this.tokenCount = this.tokenCount + 1;
-				if(this.token.getKind() == Kind.RPAREN) {
+				if (this.token.getKind() == Kind.RPAREN) {
 					consume();
 					this.tokenCount = this.tokenCount + 1;
-					return new FunctionCallExpression__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),name,null);
+					return new FunctionCallExpression__(firstToken.getLine(), firstToken.getCharPositionInLine(),
+							firstToken.getText(), name, null);
 				}
-				while(this.token.getKind()!= Kind.RPAREN) {
+				while (this.token.getKind() != Kind.RPAREN) {
 					args.add(checkofExpression());
 					consume();
 					this.tokenCount = this.tokenCount + 1;
-					if(this.token.getKind() == Kind.COMMA) {
+					if (this.token.getKind() == Kind.COMMA) {
 						consume();
 						this.tokenCount = this.tokenCount + 1;
 						args.add(checkofExpression());
 					}
 				}
-				return new FunctionCallExpression__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),name,args);
-				
-			}
-			else {
-				if(this.token.getKind() == Kind.LSQUARE) {
+				return new FunctionCallExpression__(firstToken.getLine(), firstToken.getCharPositionInLine(),
+						firstToken.getText(), name, args);
+
+			} else {
+				if (this.token.getKind() == Kind.LSQUARE) {
 					consume();
 					this.tokenCount = this.tokenCount + 1;
-					IExpression exp =checkofExpression();
-					if(this.token.getKind() == Kind.RSQUARE) {
+					IExpression exp = checkofExpression();
+					if (this.token.getKind() == Kind.RSQUARE) {
 						consume();
 						this.tokenCount = this.tokenCount + 1;
-						return new ListSelectorExpression__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),name,exp);
+						return new ListSelectorExpression__(firstToken.getLine(), firstToken.getCharPositionInLine(),
+								firstToken.getText(), name, exp);
 					}
-					
-				}
-				else {
-					return new IdentExpression__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),name);
+
+				} else {
+					return new IdentExpression__(firstToken.getLine(), firstToken.getCharPositionInLine(),
+							firstToken.getText(), name);
 				}
 			}
-			
-		
+
 		}
-		default->{
+		default -> {
 			throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());
 		}
-		}	
+		}
 		return null;
 	}
-public IPLPToken checkofSwitch() throws SyntaxException{
-	if(this.token.getKind() == Kind.KW_CASE) {
-		checkofCase();
-		consume();
-		this.tokenCount = this.tokenCount + 1;
-		this.branchExpressions.add(checkofExpression());                ;
-		checkofColon();
-		consume();
-		this.tokenCount = this.tokenCount + 1;
-		this.blocksExpressions.add(checkforCaseBlock());      
-		consume();
-		this.tokenCount = this.tokenCount + 1;
-		return this.token;	
+
+	public IPLPToken checkofSwitch() throws SyntaxException {
+		if (this.token.getKind() == Kind.KW_CASE) {
+			checkofCase();
+			consume();
+			this.tokenCount = this.tokenCount + 1;
+			this.branchExpressions.add(checkofExpression());
+			;
+			checkofColon();
+			consume();
+			this.tokenCount = this.tokenCount + 1;
+			this.blocksExpressions.add(checkforCaseBlock());
+			consume();
+			this.tokenCount = this.tokenCount + 1;
+			return this.token;
+		}
+		throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());
 	}
-	throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());
-}
+
 	public IPLPToken checkofCase() throws SyntaxException {
 		if (this.token.getKind() == Kind.KW_CASE) {
 			return this.token;
 		}
 		throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());
 	}
-	
+
 	public void consume() throws SyntaxException {
 		if (this.count >= tokens.size()) {
 
@@ -653,31 +733,28 @@ public IPLPToken checkofSwitch() throws SyntaxException{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 			} else {
 				this.token = this.tokens.get(this.count++);
 			}
 		}
 
 	}
-	
+
 	public IPLPToken throwAdded() throws LexicalException {
 		// TODO Auto-generated method stub
-	try {
-		
-	
-		
-		if (this.tokens.get(this.count).getKind() == Kind.ERROR) {
-			LexicalException lexerror = new LexicalException("Error in character insert", 0,1 );
-			 throw lexerror;
+		try {
+
+			if (this.tokens.get(this.count).getKind() == Kind.ERROR) {
+				LexicalException lexerror = new LexicalException("Error in character insert", 0, 1);
+				throw lexerror;
+			}
+			return this.token;
+
+		} catch (Exception e) {
+			LexicalException lexerror = new LexicalException("Error in character insert", 0, 1);
+			throw lexerror;
 		}
-		return this.token;
-		
-	}
-	catch(Exception e) {
-		 LexicalException lexerror = new LexicalException("Error in character insert", 0,1 );
-		 throw lexerror;
-	}
 	}
 
 }
