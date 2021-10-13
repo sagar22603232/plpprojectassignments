@@ -137,11 +137,11 @@ public class ValidateParser {
 					this.tokenCount = this.tokenCount + 1;
 					if (this.token.getKind() == Kind.KW_END) {
 						return new FunctionDeclaration___(firstToken.getLine(), firstToken.getCharPositionInLine(),
-								firstToken.getText(), name, null, typeNode, null);
+								firstToken.getText(), name, this.funArgs, typeNode, null);
 					} else {
 						blockNode = checkforBlock();
 						return new FunctionDeclaration___(firstToken.getLine(), firstToken.getCharPositionInLine(),
-								firstToken.getText(), name, null, typeNode, blockNode);
+								firstToken.getText(), name, this.funArgs, typeNode, blockNode);
 					}
 				} else {
 					while (this.token.getKind() != Kind.RPAREN) {
@@ -167,11 +167,11 @@ public class ValidateParser {
 						this.tokenCount = this.tokenCount + 1;
 						if (this.token.getKind() == Kind.KW_END) {
 							return new FunctionDeclaration___(firstToken.getLine(), firstToken.getCharPositionInLine(),
-									firstToken.getText(), name, null, null, null);
+									firstToken.getText(), name, this.funArgs, null, null);
 						} else {
 							blockNode = checkforBlock();
 							return new FunctionDeclaration___(firstToken.getLine(), firstToken.getCharPositionInLine(),
-									firstToken.getText(), name, null, null, blockNode);
+									firstToken.getText(), name, this.funArgs, null, blockNode);
 						}
 					} else {
 						typeNode = checkofFunctionType();
@@ -180,11 +180,11 @@ public class ValidateParser {
 						this.tokenCount = this.tokenCount + 1;
 						if (this.token.getKind() == Kind.KW_END) {
 							return new FunctionDeclaration___(firstToken.getLine(), firstToken.getCharPositionInLine(),
-									firstToken.getText(), name, null, typeNode, null);
+									firstToken.getText(), name, this.funArgs, typeNode, null);
 						} else {
 							blockNode = checkforBlock();
 							return new FunctionDeclaration___(firstToken.getLine(), firstToken.getCharPositionInLine(),
-									firstToken.getText(), name, null, typeNode, blockNode);
+									firstToken.getText(), name, this.funArgs, typeNode, blockNode);
 						}
 					}
 				}
@@ -656,7 +656,7 @@ public class ValidateParser {
 					consume();
 					this.tokenCount = this.tokenCount + 1;
 					return new FunctionCallExpression__(firstToken.getLine(), firstToken.getCharPositionInLine(),
-							firstToken.getText(), name, null);
+							firstToken.getText(), name, args);
 				}
 				while (this.token.getKind() != Kind.RPAREN) {
 					args.add(checkofExpression());
@@ -666,6 +666,8 @@ public class ValidateParser {
 						consume();
 						this.tokenCount = this.tokenCount + 1;
 						args.add(checkofExpression());
+						consume();
+						this.tokenCount = this.tokenCount + 1;
 					}
 				}
 				return new FunctionCallExpression__(firstToken.getLine(), firstToken.getCharPositionInLine(),
