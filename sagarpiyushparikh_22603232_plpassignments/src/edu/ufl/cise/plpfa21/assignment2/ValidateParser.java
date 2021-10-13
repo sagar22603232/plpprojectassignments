@@ -12,7 +12,10 @@ public class ValidateParser{
 	IPLPToken token;
 	ArrayList<CreateToken> tokens;
 	ExpressionParser exp = new ExpressionParser();
-	ArrayList<IDeclaration> declarationsList = new ArrayList<IDeclaration>();;
+	ArrayList<IDeclaration> declarationsList = new ArrayList<IDeclaration>();
+	ArrayList<IExpression> branchExpressions = new ArrayList<IExpression>();
+	ArrayList<IBlock> blocksExpressions = new ArrayList<IBlock>();
+	ArrayList<INameDef> funArgs = new ArrayList<INameDef>();
 	int count;
 	int tokenCount;
 	Kind kind;
@@ -46,7 +49,7 @@ public class ValidateParser{
 					
 				}
 				case KW_FUN -> {
-					checkofFunc();
+					this.declarationsList.add(checkofFunc());
 					
 				}
 				default -> {
@@ -126,19 +129,19 @@ public class ValidateParser{
 					return new FunctionDeclaration___(firstToken.getLine(), firstToken.getCharPositionInLine(), firstToken.getText(), name, null, typeNode,blockNode);
 				} else {
 					while (this.token.getKind() != Kind.RPAREN) {
-						checkofNameDef();
+						this.funArgs.add(checkofNameDef());
 						if(this.token.getKind()!= Kind.COMMA ||this.token.getKind() == Kind.RPAREN) {
 							break;
 						}
 						if (this.token.getKind() == Kind.COMMA) {
 							consume();
 							this.tokenCount = this.tokenCount + 1;
-							checkofNameDef();
+							this.funArgs.add(checkofNameDef());
 						} 
 					}
 					typeNode = checkofFunctionType();
 					blockNode = checkforBlock();
-					return new FunctionDeclaration___(firstToken.getLine(), firstToken.getCharPositionInLine(), firstToken.getText(), name, null, typeNode,blockNode);
+					return new FunctionDeclaration___(firstToken.getLine(), firstToken.getCharPositionInLine(), firstToken.getText(), name, this.funArgs, typeNode,blockNode);
 
 				}
 			}
@@ -202,6 +205,23 @@ public class ValidateParser{
 			this.tokenCount = this.tokenCount + 1;
 		}
 			checkofEnd();
+			return new Block__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),statements);
+	}
+	public IBlock checkforDefaultBlock() throws SyntaxException{
+		 List<IStatement> statements = null;
+		IPLPToken firstToken  =this.token;
+		while(this.token.getKind() !=Kind.KW_END)
+		{
+			statements.add(checkofBlock());
+			consume();
+			this.tokenCount = this.tokenCount + 1;
+		}
+			return new Block__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),statements);
+	}
+	public IBlock checkforCaseBlock() throws SyntaxException{
+		 List<IStatement> statements = null;
+		IPLPToken firstToken  =this.token;
+			statements.add(checkofBlock());
 			return new Block__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),statements);
 	}
 
@@ -304,22 +324,21 @@ public class ValidateParser{
 				break;	
 			}
 			case KW_SWITCH ->{
+				IPLPToken firstToken  =this.token;
+				IBlock defaultBlockNode = null;
 				consume();
 				this.tokenCount = this.tokenCount + 1;
-				checkofExpression();
+				IExpression switchNode  = checkofExpression();
 				while(this.token.getKind()!= Kind.KW_DEFAULT) {
 					checkofSwitch();	
 					}
 				if(this.token.getKind() == Kind.KW_DEFAULT) {
 					consume();
 					this.tokenCount = this.tokenCount + 1;
-					checkofBlock();
-					consume();
-					this.tokenCount = this.tokenCount + 1;
+					defaultBlockNode = checkforDefaultBlock();
 					checkofEnd();
-					return null;
 				}
-				break;	
+				return new SwitchStatement__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),switchNode, this.branchExpressions,this.blocksExpressions, defaultBlockNode);
 				
 			}
 			case KW_IF ->{
@@ -420,7 +439,7 @@ public class ValidateParser{
 				rightExpressionNode = checkofAdditiveExpression();;
 				leftExpressionNode = new BinaryExpression__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),leftExpressionNode,rightExpressionNode,operand.getKind());
 			}
-			
+			System.out.println("line 423"+leftExpressionNode);
 				return leftExpressionNode;
 			
 				
@@ -440,8 +459,11 @@ public class ValidateParser{
 				IPLPToken operand  =this.token;
 					consume();
 					this.tokenCount = this.tokenCount + 1;
+					System.out.println("line 443"+this.token.getText());
 					rightExpressionNode = checkofMultiplicativeExpression();
+					
 					leftExpressionNode = new BinaryExpression__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),leftExpressionNode,rightExpressionNode,operand.getKind());
+					System.out.println("line 446"+leftExpressionNode);
 			}
 			
 				return leftExpressionNode;
@@ -457,6 +479,7 @@ public class ValidateParser{
 			IExpression leftExpressionNode = checkofUnaryExpression();
 			IExpression rightExpressionNode = null;
 			while(this.token.getKind() == Kind.TIMES || this.token.getKind() == Kind.DIV) {
+				System.out.println("line 460"+leftExpressionNode);
 				IPLPToken operand  =this.token;
 				consume();
 				this.tokenCount = this.tokenCount + 1;
@@ -546,6 +569,8 @@ public class ValidateParser{
 		}
 		case IDENTIFIER->{
 			IIdentifier name;
+			ArrayList<IExpression> args = new ArrayList<IExpression>();
+			name = new Identifier__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),firstToken.getText());
 			consume();
 			this.tokenCount = this.tokenCount + 1;
 			if(this.token.getKind() == Kind.LPAREN) {
@@ -554,35 +579,34 @@ public class ValidateParser{
 				if(this.token.getKind() == Kind.RPAREN) {
 					consume();
 					this.tokenCount = this.tokenCount + 1;
-					return null;
+					return new FunctionCallExpression__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),name,null);
 				}
 				while(this.token.getKind()!= Kind.RPAREN) {
-					checkofExpression();
+					args.add(checkofExpression());
 					consume();
 					this.tokenCount = this.tokenCount + 1;
 					if(this.token.getKind() == Kind.COMMA) {
 						consume();
 						this.tokenCount = this.tokenCount + 1;
-						checkofExpression();
+						args.add(checkofExpression());
 					}
 				}
-				return null;
+				return new FunctionCallExpression__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),name,args);
 				
 			}
 			else {
 				if(this.token.getKind() == Kind.LSQUARE) {
 					consume();
 					this.tokenCount = this.tokenCount + 1;
-					checkofExpression();
+					IExpression exp =checkofExpression();
 					if(this.token.getKind() == Kind.RSQUARE) {
 						consume();
 						this.tokenCount = this.tokenCount + 1;
-						return null;
+						return new ListSelectorExpression__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),name,exp);
 					}
 					
 				}
 				else {
-					name = new Identifier__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),firstToken.getText());
 					return new IdentExpression__(firstToken.getLine(),firstToken.getCharPositionInLine(),firstToken.getText(),name);
 				}
 			}
@@ -600,11 +624,11 @@ public IPLPToken checkofSwitch() throws SyntaxException{
 		checkofCase();
 		consume();
 		this.tokenCount = this.tokenCount + 1;
-		checkofExpression();
+		this.branchExpressions.add(checkofExpression());                ;
 		checkofColon();
 		consume();
 		this.tokenCount = this.tokenCount + 1;
-		checkofBlock();
+		this.blocksExpressions.add(checkforCaseBlock());      
 		consume();
 		this.tokenCount = this.tokenCount + 1;
 		return this.token;	
