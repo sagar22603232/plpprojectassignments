@@ -60,9 +60,6 @@ public class ValidateParser {
 				consume();
 				this.tokenCount = this.tokenCount + 1;
 			}
-			for(IDeclaration ast: declarationsList) {
-				System.out.println("AST---------- : "+ast);
-			}
 			return new Program__(this.token.getLine(), this.token.getCharPositionInLine(), this.token.getText(),
 					declarationsList);
 

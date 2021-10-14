@@ -6,7 +6,6 @@ import edu.ufl.cise.plpfa21.assignment2.ValidateParser;
 import edu.ufl.cise.plpfa21.assignment1.CreateLexer;
 import java.util.ArrayList;
 import edu.ufl.cise.plpfa21.assignment2.IPLPParser;
-import  edu.ufl.cise.plpfa21.assignment3.ast.IASTNode;
 public class CreateParser extends ValidateParser implements IPLPParser {
 
 
@@ -27,6 +26,7 @@ public class CreateParser extends ValidateParser implements IPLPParser {
 		// TODO Auto-generated method stub
 		try {
 			ValidateParser checkParser = new ValidateParser(this.tokens);
+			
 			return checkParser.validateSingleParse(this.message);
 			
 		}
