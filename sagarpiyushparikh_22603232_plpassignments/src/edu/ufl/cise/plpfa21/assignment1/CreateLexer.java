@@ -596,7 +596,6 @@ public class CreateLexer extends CreateToken implements IPLPToken {
 					}
 					indexPosition = charposition+1;
 					albha = albha + '\"';
-					System.out.println("Line 599"+albha);
 					tokens.add(new CreateToken(Kind.STRING_LITERAL, indexPosition, inputLength, linePostion, inLinechar,
 							input.charAt(charposition), input.charAt(charposition), albha));
 					albha = "";

@@ -30,6 +30,7 @@ import edu.ufl.cise.plpfa21.assignment3.ast.IProgram;
 import edu.ufl.cise.plpfa21.assignment3.ast.IReturnStatement;
 import edu.ufl.cise.plpfa21.assignment3.ast.IStatement;
 import edu.ufl.cise.plpfa21.assignment3.ast.IStringLiteralExpression;
+import edu.ufl.cise.plpfa21.assignment3.ast.ISwitchStatement;
 import edu.ufl.cise.plpfa21.assignment3.ast.IType;
 import edu.ufl.cise.plpfa21.assignment3.ast.IType.TypeKind;
 import edu.ufl.cise.plpfa21.assignment3.ast.IFunctionDeclaration;
@@ -422,6 +423,288 @@ class ExampleASTParserTests implements PLPTokenKinds {
 	IReturnStatement n13=(IReturnStatement)n12;
 	IExpression n14 = n13.getExpression();
 	assertTrue(n14 instanceof INilConstantExpression);
+	}
+	@Test
+	public void test12() throws Exception {
+		String input = """
+				FUN func(a, b:INT, c): INT
+						DO
+				SWITCH x
+				CASE y: x&&y; a=TRUE;
+				DEFAULT LET abc=a[1234] DO END
+				END
+				END
+				""";
+		IASTNode ast = getAST(input);
+		assertTrue(ast instanceof IProgram);
+//		IProgram n0=(IProgram)ast;
+//		List<IDeclaration> n1 = n0.getDeclarations();
+//		int n2 = n1.size();
+//		assertEquals(n2,1);
+//		IDeclaration n3 = n1.get(0);
+//		
+//		assertTrue(n3 instanceof IFunctionDeclaration);
+//		IFunctionDeclaration n4=(IFunctionDeclaration)n3;
+//		
+//		IIdentifier n5 = n4.getName();
+//		assertEquals(n5.getName(),"func");
+//		
+//		List<INameDef> n6 = n4.getArgs();
+//		int n7 = n6.size();
+//		assertEquals(n7,3);
+//		
+//		IType n8 = n4.getResultType();
+//		assertTrue(n8 instanceof IPrimitiveType);
+//		IPrimitiveType n9 = (IPrimitiveType) n8;
+//		assertEquals(n9.getType(), TypeKind.INT);
+//		IBlock n10 = n4.getBlock();
+//		List<IStatement> n10=n9.getStatements();
+//		int n11 = n10.size();
+//		assertEquals(n11,1);
+//		
+//		IStatement n12 = n10.get(0);
+//		assertTrue(n12 instanceof ISwitchStatement);
+//		ISwitchStatement n13=(ISwitchStatement)n12;
+//		
+//		IExpression n14 = n13.getSwitchExpression();
+//		assertTrue(n14 instanceof IIdentExpression);
+//		
+//		List<IExpression> n15 = n13.getBranchExpressions();
+//		List<IBlock> n16 = n13.getBlocks();
+//		IBlock n17 = n13.getDefaultBlock();
+//		
+//		int n18 = n15.size();
+//		assertEquals(n18,1);
+//		
+//		n18 = n16.size();
+//		assertEquals(n18,1);
+//		assertTrue(n17 instanceof IBlock);
+//		
+//		//CASE y: (a(TRUE,FALSE));
+//		
+//		IExpression n19 = n15.get(0);
+//		assertTrue(n14 instanceof IIdentExpression);
+//		
+//		IBlock n20 = n16.get(0);
+	}
+	
+	@Test
+	public void test13() throws Exception {
+		String input = """
+				FUN func(a, b:INT, c): INT DO
+				SWITCH x!="true"
+				CASE "x": IF x==x
+				DO x=x+1;
+				RETURN x;
+				END
+				DEFAULT LET abc=a[1234] DO END
+				END
+				END
+				""";
+		IASTNode ast = getAST(input);
+		assertTrue(ast instanceof IProgram);
+		IProgram n0=(IProgram)ast;
+		List<IDeclaration> n1 = n0.getDeclarations();
+	}
+	
+	
+	@Test
+	public void test22() throws Exception {
+		String input = """
+				FUN func(a, b:INT):STRING DO
+				LET x=TRUE DO END
+				END
+				""";
+		
+		IASTNode ast = getAST(input);
+		assertTrue(ast instanceof IProgram);
+		IProgram n0=(IProgram)ast;
+		List<IDeclaration> n1 = n0.getDeclarations();
+	}
+
+	@Test
+	public void test23() throws Exception {
+		String input = """
+				FUN func(a, b:INT, c): INT DO
+				SWITCH x!="true"
+				CASE "x": IF x==x
+				DO x=x+1;
+				RETURN x;
+				END
+				DEFAULT LET abc=a[1234] DO END
+				END
+				END
+				""";
+		IASTNode ast = getAST(input);
+		assertTrue(ast instanceof IProgram);
+		IProgram n0=(IProgram)ast;
+		List<IDeclaration> n1 = n0.getDeclarations();
+	}
+
+	// not wrking
+	@Test
+	public void test25() throws Exception {
+		String input = """
+				FUN func() DO
+				SWITCH x
+				CASE x: IF x==x
+				DO RETURN x;
+				END
+				CASE y: (a(TRUE,FALSE));
+				DEFAULT LET abc=c[1234] DO END
+				END
+				END
+				""";
+		IASTNode ast = getAST(input);
+		assertTrue(ast instanceof IProgram);
+		IProgram n0=(IProgram)ast;
+		List<IDeclaration> n1 = n0.getDeclarations();
+	}
+
+	@Test
+	public void test28() throws Exception {
+		String input = """
+				FUN func() DO
+				SWITCH x
+				CASE x: RETURN x;
+				CASE y: (a(TRUE,FALSE));
+				DEFAULT LET abc=a[1234] DO END
+				END
+				END
+				""";
+		IASTNode ast = getAST(input);
+		assertTrue(ast instanceof IProgram);
+		IProgram n0=(IProgram)ast;
+		List<IDeclaration> n1 = n0.getDeclarations();
+	}
+	// till here
+
+	@Test
+	public void test26() throws Exception {
+		String input = """
+				FUN func() DO
+				SWITCH x
+				CASE y: (a(TRUE,FALSE));
+				DEFAULT LET abc=a[1234]DO END
+				END
+				END
+				""";
+		IASTNode ast = getAST(input);
+		assertTrue(ast instanceof IProgram);
+		IProgram n0=(IProgram)ast;
+		List<IDeclaration> n1 = n0.getDeclarations();
+	}
+
+	
+
+	@Test
+	public void test29() throws Exception {
+		String input = """
+				FUN func() DO
+				IF x>0 && y>0 && Z>10
+				DO
+				x=x+y+z;
+				END
+				END
+				""";
+		IASTNode ast = getAST(input);
+		assertTrue(ast instanceof IProgram);
+		IProgram n0=(IProgram)ast;
+		List<IDeclaration> n1 = n0.getDeclarations();
+	}
+
+	@Test
+	public void test30() throws Exception {
+		String input = """
+				FUN func() DO
+				SWITCH !x
+				CASE x: RETURN x;
+				CASE y: (a(TRUE,FALSE));
+				DEFAULT LET abc=a[1234] DO END
+				END
+				IF x>0 && y>0 && Z!=10
+				DO
+				x=x+y+z;
+				END
+				END
+				""";
+		IASTNode ast = getAST(input);
+		assertTrue(ast instanceof IProgram);
+		IProgram n0=(IProgram)ast;
+		List<IDeclaration> n1 = n0.getDeclarations();
+	}
+
+	@Test
+	public void test31() throws Exception {
+		String input = """
+				FUN func() DO
+				SWITCH x
+				CASE x: RETURN x;
+				CASE y:
+				(a(TRUE,
+				FALSE));
+				CASE NIL: LET a=
+				"abc"
+				DO 
+				END
+				
+				DEFAULT LET abc=a[1234] DO END
+				END
+				/*should ignore this */
+				/*should ignore this too */
+				WHILE x>0 ||
+				y>0 || Z<10
+				DO
+				x=x*y-z;
+				END
+				END
+				""";
+		IASTNode ast = getAST(input);
+		assertTrue(ast instanceof IProgram);
+		IProgram n0=(IProgram)ast;
+		List<IDeclaration> n1 = n0.getDeclarations();
+	}
+
+	@Test
+	public void test33() throws Exception {
+		String input = """
+				FUN func() DO
+				IF x DO END
+				END
+				""";
+		IASTNode ast = getAST(input);
+		assertTrue(ast instanceof IProgram);
+		IProgram n0=(IProgram)ast;
+		List<IDeclaration> n1 = n0.getDeclarations();
+	}
+
+	@Test
+	public void test34() throws Exception {
+		String input = """
+				FUN func() DO
+						LET a = 2		DO END
+				END
+				""";
+		IASTNode ast = getAST(input);
+		assertTrue(ast instanceof IProgram);
+		IProgram n0=(IProgram)ast;
+		List<IDeclaration> n1 = n0.getDeclarations();
+	}
+	
+	@Test
+	public void test35() throws Exception {
+		String input = """
+				FUN func() DO
+				SWITCH !x
+				DEFAULT LET abc=a[1234] DO END
+				END
+				a();
+				END
+				""";
+		IASTNode ast = getAST(input);
+		assertTrue(ast instanceof IProgram);
+		IProgram n0=(IProgram)ast;
+		List<IDeclaration> n1 = n0.getDeclarations();
 	}
 
 }
