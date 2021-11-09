@@ -1,6 +1,8 @@
 package edu.ufl.cise.plpfa21.assignment1;
 import java.util.ArrayList;
 import edu.ufl.cise.plpfa21.assignment2.IPLPParser;
+import edu.ufl.cise.plpfa21.assignment3.ast.ASTVisitor;
+import edu.ufl.cise.plpfa21.assignment4.TypeCheckVisitor;
 import edu.ufl.cise.plpfa21.assignment2.CreateParser;
 public class CompilerComponentFactory extends CreateLexer implements IPLPLexer  {
 	static ArrayList<CreateToken> tokens;
@@ -42,7 +44,10 @@ public class CompilerComponentFactory extends CreateLexer implements IPLPLexer  
 		 return parser;
 	    }
 	
-
+	 public static ASTVisitor getTypeCheckVisitor() {
+			// Replace this with whatever is needed for your compiler
+			return new TypeCheckVisitor();
+		}
 	/*This @nextToken Function is used to return single token 
 	 * */
 	@Override

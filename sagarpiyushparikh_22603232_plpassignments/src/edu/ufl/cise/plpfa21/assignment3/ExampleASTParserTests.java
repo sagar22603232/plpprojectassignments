@@ -557,14 +557,23 @@ class ExampleASTParserTests implements PLPTokenKinds {
 	@Test
 	public void test34() throws Exception {
 		String input = """
-				VAR B:LIST[LIST[LIST[BOOLEAN]]];
+				VAL B =  TRUE;
 				""";
 		IASTNode ast = getAST(input);
 		assertTrue(ast instanceof IProgram);
 		IProgram n0=(IProgram)ast;
 		List<IDeclaration> n1 = n0.getDeclarations();
 	}
-	
+	@Test
+	public void test35() throws Exception {
+		String input = """
+				FUN b() DO END
+				""";
+		IASTNode ast = getAST(input);
+		assertTrue(ast instanceof IProgram);
+		IProgram n0=(IProgram)ast;
+		List<IDeclaration> n1 = n0.getDeclarations();
+	}
 
 
 }

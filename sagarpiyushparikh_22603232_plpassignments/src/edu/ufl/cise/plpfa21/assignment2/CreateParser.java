@@ -26,7 +26,7 @@ public class CreateParser extends ValidateParser implements IPLPParser {
 		// TODO Auto-generated method stub
 		try {
 			ValidateParser checkParser = new ValidateParser(this.tokens);
-			
+			System.out.println(checkParser.validateSingleParse(this.message));
 			return checkParser.validateSingleParse(this.message);
 			
 		}

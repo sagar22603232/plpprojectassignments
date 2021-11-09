@@ -138,30 +138,43 @@ END
 		//This input has a syntax error at line 2, position 19.
 				@Test public void test11()  {
 				String input = """
-				FUN func() DO
-				IF x>0 && y>0 && Z>10
+					VAR a: LIST[INT];
+				VAR N = 5;
+				FUN f(b: LIST[INT])
 				DO
-				x=x+y+z+a;
-				END
-				END
+						LET i:INT=0
+						DO  LET c:LIST[INT]
+						    DO
+						    WHILE i < N
+						       DO
+						        c[i] = b[i] + i;
+						       END
+
+						    END
+						END
+				      END
+				   VAR j=0;
+				   FUN init() DO
+				      WHILE j < N
+				      DO
+				          a[j] = j;
+				      END
+				   END
+				   FUN main() DO
+				       init();
+				       f(a);
+				   END
+
 				""";
 				noErrorParse(input);
 				}
 				//This input has a syntax error at line 2, position 19.
 				@Test public void test12()  {
 				String input = """
-				FUN func(): BOOLEAN DO
-				SWITCH condition
-				CASE 1: RETURN TRUE;
-				CASE Hellow: LET  name= "world"DO END
-				CASE 2: (work(TRUE,FALSE));
-				DEFAULT LET check =num[200] DO END
-				END
-				IF a>0 &&
-				b<0 || z==10
-				DO
-				a=a*b-20;
-				END
+				VAR a: INT;
+				FUN f(x:INT) DO a = x; END
+				FUN main() DO
+				f(3);
 				END
 				""";
 				noErrorParse(input);
@@ -169,19 +182,10 @@ END
 				//This input has a syntax error at line 2, position 19.
 				@Test public void test13()  {
 				String input = """
-				FUN func() DO
-				SWITCH condition
-				CASE 1: RETURN TRUE;
-				CASE Hellow: LET  name= "world"DO END
-				CASE 2: (work(TRUE,FALSE));
-				DEFAULT LET check =num[200] DO END
-				END
-				IF a>0 &&
-				b<0 || z==10
-				DO
-				a=a*b-20;
-				END
-				RETURN x*y;
+				VAR a: INT;
+				FUN f(x:INT) DO a = x; END
+				FUN main() DO
+				f(3) = 4;
 				END
 				""";
 				noErrorParse(input);
