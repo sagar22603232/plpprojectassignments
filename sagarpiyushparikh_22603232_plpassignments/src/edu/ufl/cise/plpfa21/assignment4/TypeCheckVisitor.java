@@ -61,21 +61,17 @@ public class TypeCheckVisitor implements ASTVisitor {
 	@Override
 	public Object visitIBinaryExpression(IBinaryExpression n, Object arg) throws Exception {
 		//TODO
-		System.out.println("Line 64"+n);
 		
 		IExpression e0 = n.getLeft();
 		IType e0Type = (IType) e0.visit(this, arg);
-		System.out.println("Line 67"+e0Type);
 		IExpression e1 = n.getRight();
 		IType e1Type = (IType) e1.visit(this, arg);
-		System.out.println("Line 70"+e1Type);
 		Kind op = n.getOp();
 		if(compatibleAssignmentTypes(e0Type, e1Type)) {
 			if(op == Kind.EQUALS || op == Kind.NOT_EQUALS || op == Kind.LT || op == Kind.GT) {
 				n.setType(PrimitiveType__.booleanType);
 			}
 			else if((e0Type.isInt() || e0Type.isString() || e0Type.isList()) && (op == Kind.PLUS)) {
-				System.out.println("Line 78"+e1Type);
 				n.setType(e0Type);
 			}
 			else if(e0Type.isInt() && (op == Kind.MINUS || op == Kind.DIV || op == Kind.TIMES)) {
@@ -207,21 +203,32 @@ public class TypeCheckVisitor implements ASTVisitor {
 	@Override
 	public Object visitILetStatement(ILetStatement n, Object arg) throws Exception {
 		//TODO
-		System.out.println("Line 177"+n);
-		System.out.println("Line 178"+n.getLocalDef());
 		IExpression expression = n.getExpression();
-		IType expressionType = (IType) expression.visit(this, arg);
-		System.out.println("Line 182"+expressionType);
-		symtab.enterScope();
-		INameDef nameDef = n.getLocalDef();
-		IType declaredType = (IType) nameDef.visit(this, n);
-		IType inferredType = unifyAndCheck(declaredType, expressionType, n);
-		nameDef.setType(inferredType);
-		IBlock block = n.getBlock();
-		System.out.println("Line 185"+block);
-		block.visit(this, arg);
-		symtab.leaveScope();
-		return arg;
+		//System.out.println("Line 209"+n.getExpression());
+		if(expression != null) {
+			IType expressionType = (IType) expression.visit(this, arg);	
+			symtab.enterScope();
+			INameDef nameDef = n.getLocalDef();
+			IType declaredType = (IType) nameDef.visit(this, n);
+			IType inferredType = unifyAndCheck(declaredType, expressionType, n);
+			nameDef.setType(inferredType);
+			IBlock block = n.getBlock();
+			block.visit(this, arg);
+			symtab.leaveScope();
+			return arg;
+		}
+		else {
+			symtab.enterScope();
+			INameDef nameDef = n.getLocalDef();
+			IType declaredType = (IType) nameDef.visit(this, n);
+			IType inferredType = unifyAndCheck(declaredType, Type__.undefinedType, n);
+			nameDef.setType(inferredType);
+			IBlock block = n.getBlock();
+			block.visit(this, arg);
+			symtab.leaveScope();
+			return arg;
+		}
+		
 		//throw new UnsupportedOperationException("IMPLEMENT ME!");
 	}
 
@@ -309,8 +316,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 		System.out.println(n);
 		IExpression expression = n.getExpression();
 		IType expressionType = (IType) expression.visit(this, arg);
-		System.out.println("Line 307"+expressionType);
-		System.out.println("Line 308"+arg);
 		IFunctionDeclaration funame =  (IFunctionDeclaration) arg;
 		IType resultType = funame.getResultType();
 		compatibleAssignmentTypes(expressionType, resultType);
@@ -354,7 +359,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 	@Override
 	public Object visitISwitchStatement(ISwitchStatement n, Object arg) throws Exception {
 		//TODO
-		System.out.println("Line 357"+n);
 		IExpression switchExpression = n.getSwitchExpression();
 		IType expressionType = (IType) switchExpression.visit(this, arg);
 		if(expressionType.isInt() || expressionType.isBoolean() || expressionType.isString()) {
@@ -374,7 +378,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 			
 		}
 		else {
-			
+			check(false, n, "Illegal expression type in switch");
 		}
 		return arg;
 		//throw new UnsupportedOperationException("IMPLEMENT ME!");

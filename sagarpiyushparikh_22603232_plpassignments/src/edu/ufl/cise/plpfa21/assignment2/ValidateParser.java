@@ -62,9 +62,6 @@ public class ValidateParser {
 				consume();
 				this.tokenCount = this.tokenCount + 1;
 			}
-			for(IDeclaration i:declarationsList) {
-				System.out.println("Line 65"+i);
-			}
 			return new Program__(this.token.getLine(), this.token.getCharPositionInLine(), this.token.getText(),
 					declarationsList);
 
@@ -168,9 +165,7 @@ public class ValidateParser {
 							consume();
 							this.tokenCount = this.tokenCount + 1;
 								blockNode = checkforBlock();
-								System.out.println("Line 165"+ this.token.getKind());
 						}
-						System.out.println("Line 168"+ funArgs);
 						return new FunctionDeclaration___(firstToken.getLine(), firstToken.getCharPositionInLine(),
 								firstToken.getText(), name, funArgs, typeNode, blockNode);
 							
@@ -182,9 +177,8 @@ public class ValidateParser {
 							consume();
 							this.tokenCount = this.tokenCount + 1;
 								blockNode = checkforBlock();
-								System.out.println("Line 177"+ this.token.getKind());
+								
 						}
-						System.out.println("Line 182"+ funArgs);
 						return new FunctionDeclaration___(firstToken.getLine(), firstToken.getCharPositionInLine(),
 								firstToken.getText(), name, funArgs, typeNode, blockNode);	
 						
@@ -312,7 +306,6 @@ public class ValidateParser {
 					consume();
 					this.tokenCount = this.tokenCount + 1;
 				}
-				System.out.println("Line 299"+this.token.getKind());
 				return new ListType__(firstToken.getLine(), firstToken.getCharPositionInLine(), firstToken.getText(),
 						typeNode);
 			}
@@ -361,7 +354,6 @@ public class ValidateParser {
 		while (this.token.getKind() != Kind.KW_END) {
 			switch (this.token.getKind()) {
 			case KW_LET -> {
-				System.out.println("Line 347"+this.token.getKind());
 				IPLPToken firstToken = this.token;
 				IExpression expNode = null;
 				IBlock blockNode = null;
@@ -372,7 +364,6 @@ public class ValidateParser {
 					consume();
 					this.tokenCount = this.tokenCount + 1;
 					expNode = checkofExpression();
-					System.out.println("Line 358"+this.token.getKind());
 					while(this.token.getKind() != Kind.KW_END) {
 						checkofDo();
 						consume();
@@ -385,7 +376,6 @@ public class ValidateParser {
 
 				}
 				else {
-					System.out.println("Line 358"+this.token.getKind());
 					while(this.token.getKind() != Kind.KW_END) {
 						checkofDo();
 						consume();
@@ -436,7 +426,6 @@ public class ValidateParser {
 				
 			}
 			case KW_WHILE -> {
-				System.out.println("Line 406"+this.token.getKind());
 				IPLPToken firstToken = this.token;
 				IExpression expNode = null;
 				IBlock blockNode = null;
@@ -449,8 +438,6 @@ public class ValidateParser {
 					this.tokenCount = this.tokenCount + 1;
 						blockNode = checkforBlock();
 				}
-				
-					System.out.println("Line 417"+this.token.getKind());
 					return new WhileStatement__(firstToken.getLine(), firstToken.getCharPositionInLine(),
 							firstToken.getText(), expNode, blockNode);
 				
@@ -467,10 +454,8 @@ public class ValidateParser {
 
 			}
 			default -> {
-				System.out.println("Line 431"+this.token.getKind());
 				IPLPToken firstToken = this.token;
 				IExpression lefExpNode = checkofExpression();
-				System.out.println("Line 434"+this.token.getKind());
 				if (this.token.getKind() == Kind.ASSIGN) {
 					consume();
 					this.tokenCount = this.tokenCount + 1;
@@ -479,7 +464,6 @@ public class ValidateParser {
 					return new AssignmentStatement__(firstToken.getLine(), firstToken.getCharPositionInLine(),
 							firstToken.getText(), lefExpNode, rightExpNode);
 				} else {
-					System.out.println("Line 443"+this.token.getKind());
 					checkofSemicolon();
 					return new AssignmentStatement__(firstToken.getLine(), firstToken.getCharPositionInLine(),
 							firstToken.getText(), lefExpNode, null);
@@ -644,14 +628,12 @@ public class ValidateParser {
 			IExpression expNode;
 			consume();
 			this.tokenCount = this.tokenCount + 1;
-			System.out.println("Line 407"+this.token.getKind());
 			if (this.token.getKind() == Kind.RPAREN) {
 				consume();
 				this.tokenCount = this.tokenCount + 1;
 				return null;
 			} else {
 				expNode = checkofExpression();
-				System.out.println("Line 613"+this.token.getKind());
 				if (this.token.getKind() == Kind.RPAREN) {
 					consume();
 					this.tokenCount = this.tokenCount + 1;
@@ -666,10 +648,8 @@ public class ValidateParser {
 					firstToken.getText(), firstToken.getText());
 			;
 			ArrayList<IExpression> args = new ArrayList<IExpression>();
-			System.out.println("Line 629"+this.token.getKind());
 			consume();
 			this.tokenCount = this.tokenCount + 1;
-			System.out.println("Line 632"+this.token.getKind());
 			if (this.token.getKind() == Kind.LPAREN) {
 				consume();
 				this.tokenCount = this.tokenCount + 1;
@@ -682,10 +662,8 @@ public class ValidateParser {
 				}
 				while (this.token.getKind() != Kind.RPAREN) {
 					args.add(checkofExpression());
-					System.out.println("Line 669"+this.token.getKind());
 					consume();
 					this.tokenCount = this.tokenCount + 1;
-					System.out.println("Line 648"+this.token.getKind());
 					if (this.token.getKind() == Kind.COMMA) {
 						consume();
 						this.tokenCount = this.tokenCount + 1;
@@ -705,7 +683,6 @@ public class ValidateParser {
 						break;
 					}
 				}
-				System.out.println("Line 662"+this.token.getKind());
 				return new FunctionCallExpression__(firstToken.getLine(), firstToken.getCharPositionInLine(),
 						firstToken.getText(), name, args);
 

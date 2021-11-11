@@ -909,5 +909,201 @@ class TypeCheckTests {
 				""";
 		parseAndCheckTypesWithTypeError(input);
 	}
+	@DisplayName("test53")
+	@Test
+	public void test53(TestInfo testInfo) throws Exception {
+		String input = """
+				VAL a = 1;
+				VAR b = 2;
+				VAR x: INT;
+				FUN f(x:INT)
+				DO
+				SWITCH FALSE
+				CASE NIL :
+				CASE a :
+				CASE b :
+				DEFAULT
+				END
+
+				END
+
+
+				""";
+		parseAndCheckTypesWithTypeError(input);
+	}
+	@DisplayName("test54")
+	@Test
+	public void test54(TestInfo testInfo) throws Exception {
+		String input = """
+			VAR a: LIST[INT];
+				VAR b: LIST[INT];
+				VAR c = a*b;
+
+				""";
+		parseAndCheckTypesWithTypeError(input);
+	}
+	@DisplayName("test55")
+	@Test
+	public void test55(TestInfo testInfo) throws Exception {
+		String input = """
+				VAR x: INT;
+				VAL a = 10;
+				VAL b = 20;
+				FUN f(x:INT)
+				DO
+				SWITCH x
+				CASE b:
+				CASE "albha":
+				DEFAULT
+				END
+
+				END
+
+				""";
+		parseAndCheckTypesWithTypeError(input);
+	}
+	@Test
+	public void test58(TestInfo testInfo) throws Exception {
+		String input = """
+				FUN func() DO
+				LET x:INT = 1 DO END
+				LET y:BOOLEAN DO END
+				SWITCH x
+				DEFAULT 
+				END
+				/*a();*/
+				END
+				""";
+		//switch y -< y is boolean cases should also be boolean 
+		parseAndCheckTypes(input);
+	}
+	
+	@Test
+	public void test59(TestInfo testInfo) throws Exception {
+		String input = """
+					VAL  a: INT = 2+4;
+				VAL  b: INT = a-1;
+				VAL  k: BOOLEAN = 2<4;
+				VAL  c: BOOLEAN = a<b;
+				VAL  d: BOOLEAN = a>b;
+				VAL  e:  BOOLEAN= c == d;
+				VAL  f:  BOOLEAN= e != d;
+				VAL  g:  BOOLEAN = !f != d;
+				VAL  h:  BOOLEAN  = !(f == d);
+				VAL  i:  BOOLEAN = g && h;
+				VAL  j:  BOOLEAN = g || h;
+				VAL l: LIST [INT] = NIL;
+				   VAL m: INT = l[3+l[2]];
+				VAL n: LIST [LIST [ INT] ] = NIL;
+				                  VAL o: LIST [INT] = n[0];
+				""";
+		//all VAL
+		parseAndCheckTypes(input);
+	}
+	@Test
+	public void test61(TestInfo testInfo) throws Exception {
+		String input = """
+				FUN func() DO
+				LET x:INT = 1 DO END
+				LET y:BOOLEAN DO END
+				SWITCH x
+				DEFAULT 
+				END
+				/*a();*/
+				RETURN x;
+				END
+				""";
+		//Return type mot correct
+		parseAndCheckTypesWithTypeError(input);
+	}
+	
+	@Test
+	public void test62(TestInfo testInfo) throws Exception {
+		String input = """
+				FUN func():STRING DO
+				LET x:INT = 1 DO END
+				LET y:BOOLEAN DO END
+				RETURN x;
+				END
+				""";
+		//Return type not correct
+		parseAndCheckTypesWithTypeError(input);
+	}
+	
+	@Test
+	public void test63(TestInfo testInfo) throws Exception {
+		String input = """
+				FUN func():INT DO
+				LET x:INT = 1 DO END
+				LET y:BOOLEAN DO END
+				RETURN x;
+				END
+				""";
+		parseAndCheckTypes(input);
+	}
+	
+	@Test
+	public void test64(TestInfo testInfo) throws Exception {
+		String input = """
+				FUN func():INT DO
+				LET x:INT = 1 DO END
+				LET y:BOOLEAN DO END
+				RETURN x;
+				END
+				""";
+		//Return type not correct
+		parseAndCheckTypes(input);
+	}
+	@Test
+	public void test65(TestInfo testInfo) throws Exception {
+		String input = """
+				VAR y:INT;
+				VAR a:INT;
+				FUN func():INT DO				
+				IF y DO a = x; END
+				IF !y DO a = 0; END
+				RETURN x;
+				END
+				""";
+		//guard exp not boolean 
+		parseAndCheckTypesWithTypeError(input);
+	}
+	
+	@Test
+	public void test66(TestInfo testInfo) throws Exception {
+		String input = """
+				VAR y:INT;
+				VAR a:INT;
+				FUN func():INT DO				
+				IF TRUE 
+				DO a = x;
+				LET x:INT = 1 DO END
+				END
+				IF !y DO a = 0; END
+				RETURN x;
+				END
+				""";
+		//x not declared 
+		parseAndCheckTypesWithTypeError(input);
+	}
+	@Test
+	public void test71(TestInfo testInfo) throws Exception {
+		String input = """
+				FUN func() DO
+				LET x:INT = 1 DO END
+				LET y:BOOLEAN DO END
+				x="String";
+				SWITCH y
+				CASE TRUE:
+				CASE FALSE:
+				DEFAULT
+				END
+				/*a();*/
+				END
+				""";
+		// switch y -< y is boolean cases should also be boolean
+		parseAndCheckTypesWithTypeError(input);
+		//parseAndCheckTypes(input);
+	}
 
 }
