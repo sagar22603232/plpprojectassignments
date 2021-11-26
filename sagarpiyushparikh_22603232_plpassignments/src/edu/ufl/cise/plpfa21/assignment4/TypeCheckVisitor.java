@@ -11,6 +11,7 @@ import edu.ufl.cise.plpfa21.assignment3.ast.IBlock;
 import edu.ufl.cise.plpfa21.assignment3.ast.IBooleanLiteralExpression;
 import edu.ufl.cise.plpfa21.assignment3.ast.IDeclaration;
 import edu.ufl.cise.plpfa21.assignment3.ast.IExpression;
+import edu.ufl.cise.plpfa21.assignment3.ast.IExpressionStatement;
 import edu.ufl.cise.plpfa21.assignment3.ast.IFunctionCallExpression;
 import edu.ufl.cise.plpfa21.assignment3.ast.IFunctionDeclaration;
 import edu.ufl.cise.plpfa21.assignment3.ast.IIdentExpression;
@@ -313,7 +314,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 	@Override
 	public Object visitIReturnStatement(IReturnStatement n, Object arg) throws Exception {
 		//TODO
-		System.out.println(n);
 		IExpression expression = n.getExpression();
 		IType expressionType = (IType) expression.visit(this, arg);
 		IFunctionDeclaration funame =  (IFunctionDeclaration) arg;
@@ -524,6 +524,12 @@ public class TypeCheckVisitor implements ASTVisitor {
 		IDeclaration dec = symtab.lookupDec(name);
 		check(dec != null, n, "identifier not declared");
 		return dec;
+	}
+
+	@Override
+	public Object visitIExpressionStatement(IExpressionStatement n, Object arg) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
