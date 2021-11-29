@@ -285,13 +285,27 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 
 	@Override
 	public Object visitIIdentExpression(IIdentExpression n, Object arg) throws Exception {
-//		throw new UnsupportedOperationException("TO IMPLEMENT");
+		MethodVisitor mv = ((MethodVisitorLocalVarTable) arg).mv();
+		mv.visitLdcInsn(n.getText());
 		return null;
 	}
 
 	@Override
 	public Object visitIIdentifier(IIdentifier n, Object arg) throws Exception {
-		throw new UnsupportedOperationException("TO IMPLEMENT");
+		String varName = n.getName();
+		IDeclaration dec = n.getDec();
+		MethodVisitor clmv = cw.visitMethod(ACC_PUBLIC | ACC_STATIC, "<clinit>", "()V", null, null);
+		// visit the code first
+		clmv.visitCode();
+		//mark the beginning of the code
+		Label clinitStart = new Label();
+		clmv.visitLabel(clinitStart);
+		//create a list to hold local var info.  This will remain empty for <clinit> but is shown for completeness.  Methods with local variable need this.
+		List<LocalVarInfo> initializerLocalVars = new ArrayList<LocalVarInfo>();
+		//pair the local var infor and method visitor to pass into visit routines
+		MethodVisitorLocalVarTable clinitArg = new MethodVisitorLocalVarTable(clmv,initializerLocalVars);
+			dec.visit(this, clinitArg);  //argument contains local variable info and the method visitor.  
+		return null;
 	}
 
 	@Override
@@ -525,8 +539,18 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 
 	@Override
 	public Object visitIAssignmentStatement(IAssignmentStatement n, Object arg) throws Exception {
-//		throw new UnsupportedOperationException("TO IMPLEMENT");
+		IExpression leftExpression = n.getLeft();
+		leftExpression.visit(this, arg);
+		//IType leftType = leftExpression.getType();
+		IExpression rightExpression = n.getRight();
+		if( rightExpression != null) {
+			rightExpression.visit(this, arg);
+		//	IType right = leftExpression.getType();
+			
+		}
+		
 		return null;
+	
 
 	}
 
