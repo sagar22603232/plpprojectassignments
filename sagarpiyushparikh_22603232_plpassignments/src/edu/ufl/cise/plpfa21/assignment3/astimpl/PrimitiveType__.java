@@ -69,6 +69,8 @@ public class PrimitiveType__ extends Type__ implements IPrimitiveType {
 	public static final PrimitiveType__ intType = new PrimitiveType__(0,0,"INT",TypeKind.INT);
 	public static final PrimitiveType__ booleanType = new PrimitiveType__(0,0,"BOOLEAN",TypeKind.BOOLEAN);
 	public static final PrimitiveType__ stringType = new PrimitiveType__(0,0,"STRING",TypeKind.STRING);
+	public static final PrimitiveType__ localType = new PrimitiveType__(0,0,"STRING",TypeKind.LOCAL);
+	public static final PrimitiveType__ globalType = new PrimitiveType__(0,0,"STRING",TypeKind.GLOBAL);
 	
 	@Override
 	public String getDesc() throws Exception {

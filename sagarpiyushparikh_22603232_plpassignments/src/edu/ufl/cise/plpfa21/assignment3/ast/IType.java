@@ -8,13 +8,17 @@ public interface IType extends IASTNode {
 		INT,
 		BOOLEAN,
 		STRING,
-		LIST
+		LIST,
+		GLOBAL,
+		LOCAL
 	}
 	
 	boolean isInt();
 	boolean isBoolean();
 	boolean isString();
 	boolean isList();
+	boolean isGlobal();
+	boolean isLocal();
 	boolean isKind(TypeKind kind);
 	
 	String getDesc() throws Exception;

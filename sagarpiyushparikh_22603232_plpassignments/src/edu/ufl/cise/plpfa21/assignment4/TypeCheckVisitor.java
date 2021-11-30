@@ -142,6 +142,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 		IIdentifier name = n.getName();
 		IDeclaration dec = (IDeclaration) name.visit(this, null);
 		check(dec instanceof IFunctionDeclaration, n, name.getName() + " is not declared or is not a function");
+//		IType type = PrimitiveType__.localType;
+//		dec.setType(type);
 		IFunctionDeclaration fdec = (IFunctionDeclaration) dec;
 		List<INameDef> formalArgDecs = fdec.getArgs();
 		List<IExpression> actualArgs = n.getArgs();
@@ -163,6 +165,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		IIdentifier name = n.getName();
 		IDeclaration dec = (IDeclaration) name.visit(this, null);
 		IType type = getType(dec);
+		
 		check(type != Type__.undefinedType, n, "Identifier " + name + " does not have defined type");
 		n.setType(type);
 		return type;
@@ -251,9 +254,13 @@ public class TypeCheckVisitor implements ASTVisitor {
 			return null;
 		}
 		if (dec instanceof IMutableGlobal mg) {
+//			IType type = PrimitiveType__.globalType;
+//			dec.setType(type);
 			return mg.getVarDef().getType();
 		}
 		if (dec instanceof IImmutableGlobal mg) {
+//			IType type = PrimitiveType__.globalType;
+//			dec.setType(type);
 			return mg.getVarDef().getType();
 		}
 		if (dec instanceof INameDef nd) {
@@ -388,6 +395,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 	public Object visitIUnaryExpression(IUnaryExpression n, Object arg) throws Exception {
 		IExpression e = n.getExpression();
 		IType eType = (IType) e.visit(this, arg);
+		System.out.println("Line 398"+e);
+		System.out.println("Line 399"+eType);
 		Kind op = n.getOp();
 		if (op == Kind.MINUS && eType.isInt()) {
 			n.setType(PrimitiveType__.intType);
@@ -504,6 +513,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 		if (expression instanceof IIdentExpression e) {
 			String name = e.getName().getName();
 			IDeclaration dec = symtab.lookupDec(name);
+//			IType type = PrimitiveType__.globalType;
+//			dec.setType(type);
 			return isMutable(dec);
 		}
 		if (expression instanceof IListSelectorExpression e) {
@@ -523,6 +534,8 @@ public class TypeCheckVisitor implements ASTVisitor {
 		String name = n.getName();
 		IDeclaration dec = symtab.lookupDec(name);
 		check(dec != null, n, "identifier not declared");
+		n.setDec(dec);
+		n.setSlot(0);
 		return dec;
 	}
 

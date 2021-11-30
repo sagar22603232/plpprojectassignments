@@ -48,6 +48,8 @@ public class Type__ extends ASTNode__ implements IType {
 		case BOOLEAN -> isBoolean();
 		case STRING -> isString();
 		case LIST -> isList();
+		case GLOBAL -> isGlobal();
+		case LOCAL -> isLocal();
 		};
 	}
 
@@ -77,6 +79,18 @@ public class Type__ extends ASTNode__ implements IType {
 	@Override
 	public String getClassName() throws Exception {
 		throw new UnsupportedOperationException("should not invoke getClassName in Type__");
+	}
+
+	@Override
+	public boolean isGlobal() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public boolean isLocal() {
+		// TODO Auto-generated method stub
+		return true;
 	}
 	
 	

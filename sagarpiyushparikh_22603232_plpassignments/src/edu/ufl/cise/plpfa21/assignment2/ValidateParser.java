@@ -662,25 +662,32 @@ public class ValidateParser {
 				}
 				while (this.token.getKind() != Kind.RPAREN) {
 					args.add(checkofExpression());
-					consume();
-					this.tokenCount = this.tokenCount + 1;
-					if (this.token.getKind() == Kind.COMMA) {
+					if(this.token.getKind() == Kind.RPAREN) {
 						consume();
 						this.tokenCount = this.tokenCount + 1;
-						args.add(checkofExpression());
-						if(this.token.getKind() == Kind.RPAREN) {
+						break;
+					}
+					else {
+						consume();
+						this.tokenCount = this.tokenCount + 1;
+						if (this.token.getKind() == Kind.COMMA) {
+							consume();
+							this.tokenCount = this.tokenCount + 1;
+							args.add(checkofExpression());
+							if(this.token.getKind() == Kind.RPAREN) {
+								break;
+							}
+							consume();
+							this.tokenCount = this.tokenCount + 1;
+							
+						}
+						
+						if(this.token.getKind() == Kind.SEMI) {
 							break;
 						}
-						consume();
-						this.tokenCount = this.tokenCount + 1;
-						
-					}
-					
-					if(this.token.getKind() == Kind.SEMI) {
-						break;
-					}
-					if(this.token.getKind() == Kind.ASSIGN) {
-						break;
+						if(this.token.getKind() == Kind.ASSIGN) {
+							break;
+						}	
 					}
 				}
 				return new FunctionCallExpression__(firstToken.getLine(), firstToken.getCharPositionInLine(),

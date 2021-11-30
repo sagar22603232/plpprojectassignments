@@ -182,10 +182,14 @@ END
 				//This input has a syntax error at line 2, position 19.
 				@Test public void test13()  {
 				String input = """
-				VAR a: INT;
-				FUN f(x:INT) DO a = x; END
-				FUN main() DO
-				f(3) = 4;
+				FUN a(x:INT): INT
+				DO
+				   RETURN x+1;
+				END
+
+				FUN main(y: INT): INT
+				DO
+				   RETURN a(y)+2;
 				END
 				""";
 				noErrorParse(input);
