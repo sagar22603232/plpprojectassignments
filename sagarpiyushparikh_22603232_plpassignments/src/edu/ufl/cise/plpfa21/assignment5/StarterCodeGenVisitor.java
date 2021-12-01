@@ -4,6 +4,8 @@ package edu.ufl.cise.plpfa21.assignment5;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.sound.sampled.AudioFileFormat.Type;
+
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
@@ -39,9 +41,12 @@ import edu.ufl.cise.plpfa21.assignment3.ast.IStatement;
 import edu.ufl.cise.plpfa21.assignment3.ast.IStringLiteralExpression;
 import edu.ufl.cise.plpfa21.assignment3.ast.ISwitchStatement;
 import edu.ufl.cise.plpfa21.assignment3.ast.IType;
+import edu.ufl.cise.plpfa21.assignment3.ast.IType.TypeKind;
 import edu.ufl.cise.plpfa21.assignment3.ast.IUnaryExpression;
 import edu.ufl.cise.plpfa21.assignment3.ast.IWhileStatement;
 import edu.ufl.cise.plpfa21.assignment3.astimpl.Type__;
+import edu.ufl.cise.plpfa21.assignment3.astimpl.ImmutableGlobal__;
+import edu.ufl.cise.plpfa21.assignment3.astimpl.MutableGlobal__;
 
 
 
@@ -185,28 +190,10 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 						}
 					} 
 					else if (resultType.isString()) {
-						// this is complicated. Use a Java method instead
-//						Label brLabel = new Label();
-//						Label after = new Label();
-//						mv.visitJumpInsn(IFEQ,brLabel);
-//						mv.visitLdcInsn(0);
-//						mv.visitJumpInsn(GOTO,after);
-//						mv.visitLabel(brLabel);
-//						mv.visitLdcInsn(1);
-//						mv.visitLabel(after);
-						mv.visitMethodInsn(INVOKESTATIC, runtimeClass, "not", "(I)I", false);
+						mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "concat", "(Ljava/lang/String;)Ljava/lang/String;", false);
 					}
 					else if (resultType.isList()) {
-						// this is complicated. Use a Java method instead
-//						Label brLabel = new Label();
-//						Label after = new Label();
-//						mv.visitJumpInsn(IFEQ,brLabel);
-//						mv.visitLdcInsn(0);
-//						mv.visitJumpInsn(GOTO,after);
-//						mv.visitLabel(brLabel);
-//						mv.visitLdcInsn(1);
-//						mv.visitLabel(after);
-						mv.visitMethodInsn(INVOKESTATIC, runtimeClass, "not", "(I)I", false);
+						mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "concat", "(Ljava/lang/String;)Ljava/lang/String;", false);
 					}
 					else { // argument is List
 						throw new UnsupportedOperationException("SKIP THIS");
@@ -304,26 +291,108 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 
 	@Override
 	public Object visitIIdentExpression(IIdentExpression n, Object arg) throws Exception {
+		String text = n.getName().getDec().getText();
+		IType type = n.getType();
+		visitIIdentifier(n.getName(),arg);
+		IDeclaration dec = n.getName().getDec();
 		MethodVisitor mv = ((MethodVisitorLocalVarTable) arg).mv();
-		mv.visitLdcInsn(n.getText());
+		//String varName = n.getDec().getText();
+	//	System.out.println(varName);
+		String typeDesc = "";
+		switch(text) {
+		case "VAR","VAL"->{
+
+			if(type.isInt()) {
+				mv.visitVarInsn(ALOAD,0);
+				mv.visitFieldInsn(Opcodes.INVOKESTATIC, runtimeClass, text, "I");
+			}
+			else {
+				if(type.isBoolean()) {
+					mv.visitVarInsn(ALOAD,0);
+					mv.visitFieldInsn(Opcodes.INVOKESTATIC, runtimeClass, text, "Z");
+				}
+				else {
+					if(type.isString()) {
+						mv.visitVarInsn(ALOAD,0);
+						mv.visitFieldInsn(Opcodes.INVOKESTATIC, runtimeClass, text, "Ljava/lang/String;");
+					}
+				}
+			}
+		}
+		default->{
+			if(type.isBoolean() || type.isInt()) {
+				mv.visitVarInsn(Opcodes.ILOAD, n.getName().getSlot());
+			}
+			else {
+				mv.visitVarInsn(Opcodes.ALOAD, n.getName().getSlot());
+			}
+		}
+		
+		}
+		//n.visit(this, arg);
+		
+	
 		return null;
 	}
 
 	@Override
 	public Object visitIIdentifier(IIdentifier n, Object arg) throws Exception {
-		String varName = n.getName();
 		IDeclaration dec = n.getDec();
-		MethodVisitor clmv = cw.visitMethod(ACC_PUBLIC | ACC_STATIC, "<clinit>", "()V", null, null);
-		// visit the code first
-		clmv.visitCode();
-		//mark the beginning of the code
-		Label clinitStart = new Label();
-		clmv.visitLabel(clinitStart);
-		//create a list to hold local var info.  This will remain empty for <clinit> but is shown for completeness.  Methods with local variable need this.
-		List<LocalVarInfo> initializerLocalVars = new ArrayList<LocalVarInfo>();
-		//pair the local var infor and method visitor to pass into visit routines
-		MethodVisitorLocalVarTable clinitArg = new MethodVisitorLocalVarTable(clmv,initializerLocalVars);
-			dec.visit(this, clinitArg);  //argument contains local variable info and the method visitor.  
+		System.out.println("Line 340"+dec.getText());
+		String text = n.getDec().getText();
+		
+		MethodVisitor mv = ((MethodVisitorLocalVarTable) arg).mv();
+		switch(text) {
+		case "VAR"->{
+			MutableGlobal__ checkType = (MutableGlobal__) n.getDec();
+			if(checkType.getVarDef().getType().isInt()) {
+				mv.visitVarInsn(ALOAD,0);
+				mv.visitInsn(SWAP);
+				mv.visitFieldInsn(PUTFIELD, runtimeClass, text, "I");
+			}
+			else {
+				if(checkType.getVarDef().getType().isBoolean()) {
+					mv.visitVarInsn(ALOAD,0);
+					mv.visitInsn(SWAP);
+					mv.visitFieldInsn(PUTFIELD, runtimeClass, text, "Z");
+				}
+				else {
+					if(checkType.getVarDef().getType().isString()) {
+						mv.visitVarInsn(ALOAD,0);
+						mv.visitInsn(SWAP);
+						mv.visitFieldInsn(PUTFIELD, runtimeClass, text, "Ljava/lang/String;");
+					}
+				}
+			}
+		}
+		case "VAL"->{
+			ImmutableGlobal__ checkType = (ImmutableGlobal__) n.getDec();
+			if(checkType.getVarDef().getType().isInt()) {
+				mv.visitVarInsn(ALOAD,0);
+				mv.visitInsn(SWAP);
+				mv.visitFieldInsn(PUTFIELD, runtimeClass, text, "I");
+			}
+			else {
+				if(checkType.getVarDef().getType().isBoolean()) {
+					mv.visitVarInsn(ALOAD,0);
+					mv.visitInsn(SWAP);
+					mv.visitFieldInsn(PUTFIELD, runtimeClass, text, "Z");
+				}
+				else {
+					if(checkType.getVarDef().getType().isString()) {
+						mv.visitVarInsn(ALOAD,0);
+						mv.visitInsn(SWAP);
+						mv.visitFieldInsn(PUTFIELD, runtimeClass, text, "Ljava/lang/String;");
+					}
+				}
+			}
+			
+		}
+		default->{
+			
+		}
+		
+		}
 		return null;
 	}
 
@@ -562,7 +631,7 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 	@Override
 	public Object visitIAssignmentStatement(IAssignmentStatement n, Object arg) throws Exception {
 		System.out.println("Line 543"+n);
-		MethodVisitor mv = ((MethodVisitorLocalVarTable) arg).mv();
+		//MethodVisitor mv = ((MethodVisitorLocalVarTable) arg).mv();
 		IExpression leftExpression = n.getLeft();
 		IType leftType = leftExpression.getType();
 		IExpression rightExpression = n.getRight();
@@ -593,3 +662,4 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 		throw new UnsupportedOperationException("TO IMPLEMENT");
 	}
 }
+
