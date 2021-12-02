@@ -35,6 +35,7 @@ public class Identifier__ extends ASTNode__ implements IIdentifier {
 	}
 
 	public void setDec(IDeclaration dec) {
+		System.out.println("Line 38"+dec);
 		this.dec = dec;
 	}
    
