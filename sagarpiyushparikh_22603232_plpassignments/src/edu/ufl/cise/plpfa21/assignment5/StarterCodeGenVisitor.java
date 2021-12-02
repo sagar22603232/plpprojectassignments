@@ -193,6 +193,14 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 									mv.visitLdcInsn(false);
 									break;
 								}
+								case LT->{
+									mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "compareto", "(Ljava/lang/String;)Ljava/lang/String;", false);
+									//mv.visitLdcInsn(false);
+								}
+								case GT->{
+									mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "compareto", "(Ljava/lang/String;)Ljava/lang/String;", false);
+									//mv.visitLdcInsn(false);
+								}
 								}
 							}
 						}
@@ -312,7 +320,6 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 
 	@Override
 	public Object visitIIdentExpression(IIdentExpression n, Object arg) throws Exception {
-		System.out.println("Line 296"+n);
 		String text = n.getName().getDec().getText();
 		IType type = n.getType();
 		MethodVisitor mv = ((MethodVisitorLocalVarTable) arg).mv();
@@ -358,7 +365,6 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 	@Override
 	public Object visitIIdentifier(IIdentifier n, Object arg) throws Exception {
 		IDeclaration dec = n.getDec();
-		System.out.println("Line 340"+dec.getText());
 		String text = n.getDec().getText();
 		
 		MethodVisitor mv = ((MethodVisitorLocalVarTable) arg).mv();
@@ -410,24 +416,12 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 			break;
 		}
 		default->{
-			System.out.print(n.getDec());
 			NameDef__ checkTYpe = (NameDef__) n.getDec();
-			System.out.println("Line 396"+checkTYpe.getType());
-			//mv.visitVarInsn(ILOAD,n.getSlot());
-//			LetStatement__ checkType = (LetStatement__) n.getDec();
-//			if(checkTYpe.getType().isInt()) {
-//				
-//			}
-//			else {
-//				if(checkTYpe.getType().isBoolean()) {
-//					mv.visitVarInsn(ISTORE,n.getSlot());
-//				}
-//				else {
-//					if(checkTYpe.getType().isString()) {
-//						mv.visitVarInsn(ASTORE,n.getSlot());
-//					}
-//				}
-//			}
+			if(checkTYpe.getType().isInt()||checkTYpe.getType().isBoolean()) {
+				mv.visitVarInsn(ILOAD,n.getSlot());
+			}else {
+				mv.visitVarInsn(ALOAD,n.getSlot());
+			}
 			
 		}
 		
@@ -446,8 +440,9 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
         Label check = new Label();
         mv.visitJumpInsn(IF_ICMPLE, check);
         n.getBlock().visit(this, arg);
-        mv.visitJumpInsn(GOTO, start);
-        mv.visitLabel(end);
+        Label block = new Label();
+        mv.visitJumpInsn(GOTO, block);
+        mv.visitLabel(check);
 		
 		return null;
 	}
@@ -555,7 +550,6 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 		//get the method visitor from the arg
 		MethodVisitor mv = ((MethodVisitorLocalVarTable)arg).mv;
 		IExpression e = n.getExpression();
-		System.out.println();
 		if (e != null) {  //the return statement has an expression
 			e.visit(this, arg);  //generate code to leave value of expression on top of stack.
 			//use type of expression to determine which return instruction to use
@@ -666,10 +660,8 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 	public Object visitIAssignmentStatement(IAssignmentStatement n, Object arg) throws Exception {
 		IExpression leftExpression = n.getLeft();
 		MethodVisitor mv = ((MethodVisitorLocalVarTable)arg).mv;		
-		System.out.println("Line 653"+leftExpression);
 		IType leftType = leftExpression.getType();
 		IExpression rightExpression = n.getRight();
-		System.out.println("Line 654"+rightExpression);
 			rightExpression.visit(this, arg);
 			if(leftType.isInt()) {
 				mv.visitFieldInsn(PUTSTATIC, className, leftExpression.getText(), "I");
@@ -693,7 +685,6 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 
 	@Override
 	public Object visitIExpressionStatement(IExpressionStatement n, Object arg) throws Exception {
-		System.out.println("Line 670"+n);
 		return null;
 		//throw new UnsupportedOperationException("TO IMPLEMENT");
 	}
