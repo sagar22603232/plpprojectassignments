@@ -315,7 +315,49 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 
 	@Override
 	public Object visitIFunctionCallExpression(IFunctionCallExpression n, Object arg) throws Exception {
-		throw new UnsupportedOperationException("TO IMPLEMENT");
+		System.out.println("Line 318"+n);
+		System.out.println("Line 319"+n.getArgs().get(0));
+		System.out.println("Line 320"+n.getName());
+		String text = n.getName().getDec().getText();
+		IType type = n.getType();
+		IExpression e = n.getArgs().get(0);
+		MethodVisitor mv = ((MethodVisitorLocalVarTable) arg).mv();
+		String typeDesc = "";
+		switch(text) {
+		case "VAR","VAL"->{
+
+			if(type.isInt()) {
+				//mv.visitVarInsn(ALOAD,0);
+				mv.visitFieldInsn(GETSTATIC, className, n.getName().getName(), "I");
+			}
+			else {
+				if(type.isBoolean()) {
+					//mv.visitVarInsn(ALOAD,0);
+					mv.visitFieldInsn(GETSTATIC, className,n.getName().getName(), "Z");
+				}
+				else {
+					if(type.isString()) {
+						//mv.visitVarInsn(ALOAD,0);
+						mv.visitFieldInsn(GETSTATIC, className, n.getName().getName(), "Ljava/lang/String;");
+						//mv.visitFieldInsn(GETSTATIC, runtimeClass, text, "Ljava/lang/String;");
+					}
+				}
+			}
+			break;
+		}
+		default->{
+			if(type.isBoolean() || type.isInt()) {
+				mv.visitVarInsn(Opcodes.ILOAD, n.getName().getSlot());
+			}
+			else {
+				mv.visitVarInsn(Opcodes.ALOAD, n.getName().getSlot());
+			}
+		}
+		
+		}
+		e.visit(this, arg);  //generate code to leave value of expression on top of stack
+		
+		return null;
 	}
 
 	@Override
@@ -431,22 +473,30 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 
 	@Override
 	public Object visitIIfStatement(IIfStatement n, Object arg) throws Exception {
-		MethodVisitor mv = ((MethodVisitorLocalVarTable)arg).mv;
+		MethodVisitor mv = ((MethodVisitorLocalVarTable) arg).mv;
 		IExpression e = n.getGuardExpression();
-		Label start = new Label();
-		Label end = new Label();
-        mv.visitLabel(start);
-        e.visit(this, arg);
-        Label check = new Label();
-        mv.visitJumpInsn(IF_ICMPLE, check);
-        n.getBlock().visit(this, arg);
-        Label block = new Label();
-        mv.visitJumpInsn(GOTO, block);
-        mv.visitLabel(check);
-		
+		Label startif = new Label();
+		if (e != null) { 
+		e.visit(this, arg); 
+		mv.visitJumpInsn(IFEQ,startif);
+		Label startblock = new Label();
+		mv.visitLabel(startblock);
+		IType type = e.getType();
+		if (type.isBoolean()) {
+		n.getBlock().visit(this, arg);
+		Label startexp = new Label();
+		mv.visitLabel(startexp);
+		mv.visitLabel(startif);
+		Label endif = new Label();
+		mv.visitLabel(endif);
+		} else {
+		mv.visitInsn(ARETURN);
+		}
+		} else { 
+		mv.visitInsn(RETURN);
+		}
 		return null;
-	}
-
+		}
 	@Override
 	public Object visitIImmutableGlobal(IImmutableGlobal n, Object arg) throws Exception {
 		MethodVisitor mv = ((MethodVisitorLocalVarTable)arg).mv;				
@@ -616,18 +666,31 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 
 	@Override
 	public Object visitIWhileStatement(IWhileStatement n, Object arg) throws Exception {
-		MethodVisitor mv = ((MethodVisitorLocalVarTable)arg).mv;
+		MethodVisitor mv = ((MethodVisitorLocalVarTable) arg).mv;
 		IExpression e = n.getGuardExpression();
-		Label start = new Label();
-		Label end = new Label();
-        mv.visitLabel(start);
-        e.visit(this, arg);
-        mv.visitJumpInsn(IF_ICMPGE, start);
-        n.getBlock().visit(this, arg);
-        mv.visitJumpInsn(GOTO, start);
-        mv.visitLabel(end);
+		Label startexp = new Label();
+		Label startbody = new Label(); 
+		if (e != null) { 
+		mv.visitJumpInsn(GOTO, startexp);
+		mv.visitLabel(startbody);
+		IType type = e.getType();
+		if (type.isBoolean()) {
+		n.getBlock().visit(this, arg);
+		Label endbody = new Label(); 
+		mv.visitLabel(endbody);
+		mv.visitLabel(startexp);
+		e.visit(this, arg); 
+		Label endexpression = new Label();
+		mv.visitLabel(endexpression);
+		mv.visitJumpInsn(IFNE, startbody);
+		} else {
+		mv.visitInsn(ARETURN);
+		}
+		} else { 
+		mv.visitInsn(RETURN);
+		}
 		return null;
-	}
+		}
 
 
 	@Override
