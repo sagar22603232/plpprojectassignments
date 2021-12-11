@@ -549,9 +549,9 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 		List<LocalVarInfo> localVar = new ArrayList<LocalVarInfo>();
 		String desc =  lname.getType().getDesc();
 		// letDef.getIdent().setSlot(slotLocal++);
-		localVar.add(new LocalVarInfo( lname.getIdent().getName(), desc, null, null));
-		mv.visitCode();
-		mv.visitVarInsn(Opcodes.ILOAD,  lname.getIdent().getSlot());
+//		localVar.add(new LocalVarInfo(letDef.getIdent().getName(), desc, null, null));
+//		mv.visitCode();
+//		mv.visitVarInsn(Opcodes.ILOAD, letDef.getIdent().getSlot());
 		Label funcStart = new Label();
 		mv.visitLabel(funcStart);
 		//MethodVisitorLocalVarTable context = new MethodVisitorLocalVarTable(mv, localVar);

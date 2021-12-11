@@ -1262,6 +1262,95 @@ public class CodeGenTests {
 	}
 	
 
+	@DisplayName("sagarpiyushparikhtest0")
+	@Test
+	public void sagarpiyushparikhtest0(TestInfo testInfo) throws Exception {
+		String input = """
+				FUN b(x:INT, y:INT):BOOLEAN
+				DO
+				   IF x - y == 0
+				   DO
+				   RETURN TRUE;
+				   END
+				   RETURN FALSE;
+				END
+				""";
+		byte[] bytecode = compile(input, className, packageName);
+		show(CodeGenUtils.bytecodeToString(bytecode));
+		Object[] params = { 9, 9 };
+		boolean result = (boolean) loadClassAndRunMethod(bytecode, className, "b", params);
+		assertEquals(true, result);
+	}
+	
+	@DisplayName("sagarpiyushparikhtest1")
+	@Test
+	public void sagarpiyushparikhtest1(TestInfo testInfo) throws Exception {
+		String input = """
+				VAR a:INT =19;
+				FUN b():STRING
+				DO
+				   IF a/2 == 0
+				   DO
+				   RETURN "EVEN";
+				   END
+				   RETURN "ODD";
+				END
+				""";
+		byte[] bytecode = compile(input, className, packageName);
+		show(CodeGenUtils.bytecodeToString(bytecode));
+		Object[] params = { };
+		String result = (String) loadClassAndRunMethod(bytecode, className, "b", params);
+		assertEquals("ODD", result);
+	}
 
+
+	@DisplayName("sagarpiyushparikhtest2")
+	@Test
+	public void sagarpiyushparikhtest2(TestInfo testInfo) throws Exception {
+		String input = """
+				VAR fact = 1;
+				FUN factorial(i:INT):INT
+				DO
+				  WHILE i > 0 DO
+				    fact = i * fact;
+				    i = i -1;
+				     END
+				  RETURN fact;
+				END
+				""";
+		byte[] bytecode = compile(input, className, packageName);
+		show(CodeGenUtils.bytecodeToString(bytecode));
+		Object[] params = { 5 };
+		int result = (int) loadClassAndRunMethod(bytecode, className, "factorial", params);
+		assertEquals(120, result);
+	}
+	
+	@DisplayName("sagarpiyushparikhtest3")
+	@Test
+	public void sagarpiyushparikhtest3(TestInfo testInfo) throws Exception {
+		String input = """
+				FUN grades(mark:INT):STRING
+				DO
+				  IF mark > 90 && mark< 100
+				   DO
+				   RETURN "A grade";
+				   END
+				  IF mark > 85 && mark< 90
+				   DO
+				   RETURN "A- grade";
+				   END
+				   IF mark > 80 && mark< 70
+				   DO
+				   RETURN "B grade";
+				   END
+				   RETURN "C grade";
+				END
+				""";
+		byte[] bytecode = compile(input, className, packageName);
+		show(CodeGenUtils.bytecodeToString(bytecode));
+		Object[] params = { 88};
+		String result = (String) loadClassAndRunMethod(bytecode, className, "grades", params);
+		assertEquals("A- grade", result);
+	}
 
 }
