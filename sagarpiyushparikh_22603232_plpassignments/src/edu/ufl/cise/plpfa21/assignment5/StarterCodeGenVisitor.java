@@ -49,8 +49,9 @@ import edu.ufl.cise.plpfa21.assignment3.astimpl.ImmutableGlobal__;
 import edu.ufl.cise.plpfa21.assignment3.astimpl.LetStatement__;
 import edu.ufl.cise.plpfa21.assignment3.astimpl.MutableGlobal__;
 import edu.ufl.cise.plpfa21.assignment3.astimpl.NameDef__;
-
-
+import edu.ufl.cise.plpfa21.assignment3.astimpl.IdentExpression__;
+import edu.ufl.cise.plpfa21.assignment3.astimpl.FunctionCallExpression__;
+import edu.ufl.cise.plpfa21.assignment3.astimpl.FunctionDeclaration___;
 
 public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 	
@@ -191,14 +192,14 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 								case NOT_EQUALS->{
 									mv.visitJumpInsn(IF_ACMPNE, start);;
 									mv.visitLdcInsn(false);
-									break;
 								}
 								case LT->{
-									mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "compareto", "(Ljava/lang/String;)Ljava/lang/String;", false);
+									mv.visitInsn(Opcodes.SWAP);
+									mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "startsWith", "(Ljava/lang/String;)Z", false);
 									//mv.visitLdcInsn(false);
 								}
 								case GT->{
-									mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "compareto", "(Ljava/lang/String;)Ljava/lang/String;", false);
+									mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "startsWith", "(Ljava/lang/String;)Z", false);
 									//mv.visitLdcInsn(false);
 								}
 								}
@@ -270,11 +271,23 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 		//Also assign and store slot numbers for parameters
 		StringBuilder sb = new StringBuilder();	
 		sb.append("(");
+		int count = 0;
 		for( INameDef def: args) {
 			String desc = def.getType().getDesc();
+			MethodVisitor mv = ((MethodVisitorLocalVarTable) arg).mv();
+			IIdentifier i = def.getIdent();
+			//i.setSlot(count++);
+			NameDef__ checkTYpe = (NameDef__) i.getDec();
+			//mv.visitVarInsn(ILOAD,count);
+//			if(checkTYpe.getType().isInt()||checkTYpe.getType().isBoolean()) {
+//				mv.visitVarInsn(ILOAD,i.getSlot());
+//			}else {
+//				mv.visitVarInsn(ALOAD,i.getSlot());
+//			}
 			sb.append(desc);
 			def.getIdent().setSlot(localVars.size());
 			localVars.add(new LocalVarInfo(def.getIdent().getName(), desc, null, null));
+			count++;
 		}
 		sb.append(")");
 		sb.append(n.getResultType().getDesc());
@@ -315,10 +328,8 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 
 	@Override
 	public Object visitIFunctionCallExpression(IFunctionCallExpression n, Object arg) throws Exception {
-		System.out.println("Line 318"+n);
-		System.out.println("Line 319"+n.getArgs().get(0));
-		System.out.println("Line 320"+n.getName());
 		String text = n.getName().getDec().getText();
+		String fname =  n.getName().getText();
 		IType type = n.getType();
 		IExpression e = n.getArgs().get(0);
 		MethodVisitor mv = ((MethodVisitorLocalVarTable) arg).mv();
@@ -355,8 +366,15 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 		}
 		
 		}
-		e.visit(this, arg);  //generate code to leave value of expression on top of stack
-		
+		//IFunctionDeclaration f =(IFunctionDeclaration) n.getName().getDec(); 
+		//n.visit(this, arg);
+		if (type.isInt()) {
+			mv.visitMethodInsn(INVOKESTATIC, className, fname, "(I)I", false);
+		} else if (type.isBoolean()) {
+			mv.visitMethodInsn(INVOKESTATIC, className, fname, "(I)Z", false);
+		} else {
+			mv.visitMethodInsn(INVOKESTATIC, className, fname, "(I)V", false);
+		}
 		return null;
 	}
 
@@ -521,7 +539,57 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 
 	@Override
 	public Object visitILetStatement(ILetStatement n, Object arg) throws Exception {
-		throw new UnsupportedOperationException("TO IMPLEMENT");
+		MethodVisitor mv = ((MethodVisitorLocalVarTable) arg).mv;
+		INameDef lname = n.getLocalDef();
+		String nameLet =  lname.getText();
+		//start 
+		//end
+		IExpression e = n.getExpression();
+		Label IFend = new Label();
+		List<LocalVarInfo> localVar = new ArrayList<LocalVarInfo>();
+		String desc =  lname.getType().getDesc();
+		// letDef.getIdent().setSlot(slotLocal++);
+		localVar.add(new LocalVarInfo( lname.getIdent().getName(), desc, null, null));
+		mv.visitCode();
+		mv.visitVarInsn(Opcodes.ILOAD,  lname.getIdent().getSlot());
+		Label funcStart = new Label();
+		mv.visitLabel(funcStart);
+		//MethodVisitorLocalVarTable context = new MethodVisitorLocalVarTable(mv, localVar);
+		//mv.visitLocalVariable( nameLet , arg, null, range0, range1, slot);
+		CodeGenUtils.genDebugPrint(mv, "");
+		// IExpression e = n.getExpression();
+		if (e != null) { // the return statement has an expression
+			e.visit(this, arg); // generate code to leave value of expression on top of stack.
+			// mv.visitVarInsn(Opcodes.ILOAD, letDef.getIdent().getSlot());
+			Label IFstart = new Label();
+			mv.visitLabel(IFstart);
+			// use type of expression to determine which return instruction to use
+			// IType type = e.getType();
+			// if (type.isBoolean()) {
+			// -----------check below 2 line needed or not ---------
+			// Label funcStart = new Label();
+			// mv.visitLabel(funcStart);
+			// MethodVisitorLocalVarTable context = new MethodVisitorLocalVarTable(mv);
+			// visit block to generate code for statements
+			n.getBlock().visit(this, arg);
+//			Label funcEnd = new Label();
+//			mv.visitLabel(funcEnd);
+			Label IFe = new Label();
+			mv.visitLabel(IFe);
+			mv.visitLabel(IFend);
+			Label IFendafter = new Label();
+			mv.visitLabel(IFendafter);
+			//addLocals(context, funcStart, IFe);
+			mv.visitEnd();
+			// mv.visitInsn(IRETURN);
+//			} else {
+//				mv.visitInsn(ARETURN);
+//			}
+		} else { // there is no argument, (and we have verified duirng type checking that
+					// function has void return type) so use this return statement.
+			mv.visitInsn(RETURN);
+		}
+		return null;
 	}
 		
 
@@ -597,17 +665,15 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 
 	@Override
 	public Object visitIReturnStatement(IReturnStatement n, Object arg) throws Exception {
-		//get the method visitor from the arg
 		MethodVisitor mv = ((MethodVisitorLocalVarTable)arg).mv;
 		IExpression e = n.getExpression();
-		if (e != null) {  //the return statement has an expression
-			e.visit(this, arg);  //generate code to leave value of expression on top of stack.
-			//use type of expression to determine which return instruction to use
+		if (e != null) {  
+			e.visit(this, arg);  
 			IType type = e.getType();
 			if (type.isInt() || type.isBoolean()) {mv.visitInsn(IRETURN);}
 			else  {mv.visitInsn(ARETURN);}
 		}
-		else { //there is no argument, (and we have verified duirng type checking that function has void return type) so use this return statement.  
+		else { 
 			mv.visitInsn(RETURN);
 		}
 		return null;
@@ -725,18 +791,55 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 		MethodVisitor mv = ((MethodVisitorLocalVarTable)arg).mv;		
 		IType leftType = leftExpression.getType();
 		IExpression rightExpression = n.getRight();
+		IIdentifier i ;
+		IDeclaration d;
+		FunctionDeclaration___ fc;
+		if(leftExpression instanceof FunctionCallExpression__) {
+			FunctionCallExpression__ fn = (FunctionCallExpression__)leftExpression;
+			i= fn.getName();
+			 d= i.getDec();
+			 fc = (FunctionDeclaration___) d;
+		}
+		else {
+			IdentExpression__ t =  (IdentExpression__ )n.getLeft();
+			i = t.getName();
+			 d = i.getDec();
+		}
+		
+		
+		
+		if(rightExpression != null) {
 			rightExpression.visit(this, arg);
-			if(leftType.isInt()) {
-				mv.visitFieldInsn(PUTSTATIC, className, leftExpression.getText(), "I");
-			}else{
-				if(leftType.isBoolean()) {
-					mv.visitFieldInsn(PUTSTATIC, className, leftExpression.getText(), "Z");
+			if(d instanceof NameDef__) {
+				if(leftType.isInt() ||leftType.isBoolean()) {
+					mv.visitVarInsn(ISTORE,i.getSlot());
 				}
-				else {
-					if(leftType.isString())
-					mv.visitFieldInsn(PUTSTATIC, className, leftExpression.getText(), "Ljava/lang/String;");
+				else{
+					mv.visitVarInsn(ASTORE,i.getSlot());
 				}
 			}
+			else {
+				if(leftType.isInt()) {
+					mv.visitFieldInsn(PUTSTATIC, className, leftExpression.getText(), "I");
+				}else{
+					if(leftType.isBoolean()) {
+						mv.visitFieldInsn(PUTSTATIC, className, leftExpression.getText(), "Z");
+					}
+					else {
+						if(leftType.isString())
+						mv.visitFieldInsn(PUTSTATIC, className, leftExpression.getText(), "Ljava/lang/String;");
+					}
+				}
+			}
+		
+		}
+		else {
+			if(leftType.equals(Type__.voidType)) {
+				IFunctionCallExpression fn = (IFunctionCallExpression) leftExpression;
+				fn.visit(this, arg);
+			}
+		}
+		
 			
 		
 		

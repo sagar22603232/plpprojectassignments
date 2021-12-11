@@ -1260,7 +1260,7 @@ public class CodeGenTests {
 		runMethod(testClass, "main", params);
 		assertEquals(5, getInt(testClass, "y"));
 	}
-
+	
 
 
 

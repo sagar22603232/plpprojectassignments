@@ -38,9 +38,10 @@ import edu.ufl.cise.plpfa21.assignment3.ast.IWhileStatement;
 import edu.ufl.cise.plpfa21.assignment3.astimpl.ListType__;
 import edu.ufl.cise.plpfa21.assignment3.astimpl.PrimitiveType__;
 import edu.ufl.cise.plpfa21.assignment3.astimpl.Type__;
-
+import edu.ufl.cise.plpfa21.assignment3.astimpl.NameDef__;
 public class TypeCheckVisitor implements ASTVisitor {
-
+	public static int count = 0;
+	
 	@SuppressWarnings("serial")
 	public static class TypeCheckException extends Exception {
 		TypeCheckException(String m) {
@@ -165,7 +166,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 		IIdentifier name = n.getName();
 		IDeclaration dec = (IDeclaration) name.visit(this, null);
 		IType type = getType(dec);
-		
+		//
+//		name.setDec(dec);
+//		name.setSlot(count);
 		check(type != Type__.undefinedType, n, "Identifier " + name + " does not have defined type");
 		n.setType(type);
 		return type;
@@ -208,7 +211,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 	public Object visitILetStatement(ILetStatement n, Object arg) throws Exception {
 		//TODO
 		IExpression expression = n.getExpression();
-		//System.out.println("Line 209"+n.getExpression());
 		if(expression != null) {
 			IType expressionType = (IType) expression.visit(this, arg);	
 			symtab.enterScope();
@@ -291,11 +293,17 @@ public class TypeCheckVisitor implements ASTVisitor {
 	public Object visitINameDef(INameDef n, Object arg) throws Exception {
 		String name = n.getIdent().getName();
 		IType type = (IType) n.getType();
+		IIdentifier i = n.getIdent();
+		System.out.println("Line 297"+count);
+		
+		
 		IType varType = type != null ? (IType) type.visit(this, null) : Type__.undefinedType;
 		if (arg instanceof IMutableGlobal || arg instanceof IImmutableGlobal) {
 			check(symtab.insert(name, (IDeclaration) arg), n, "Variable " + name + "already declared in this scope");
 		} else {
+			i.setSlot(count);
 			check(symtab.insert(name, n), n, "Variable " + name + "already declared in this scope");
+			count++;
 		}
 		return varType;
 	}
@@ -312,6 +320,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		for (IDeclaration dec : decs) {
 			dec.visit(this, symtab);
 		}
+		count = 0;
 		return n;
 	}
 
@@ -395,8 +404,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 	public Object visitIUnaryExpression(IUnaryExpression n, Object arg) throws Exception {
 		IExpression e = n.getExpression();
 		IType eType = (IType) e.visit(this, arg);
-		System.out.println("Line 398"+e);
-		System.out.println("Line 399"+eType);
 		Kind op = n.getOp();
 		if (op == Kind.MINUS && eType.isInt()) {
 			n.setType(PrimitiveType__.intType);
@@ -535,7 +542,24 @@ public class TypeCheckVisitor implements ASTVisitor {
 		IDeclaration dec = symtab.lookupDec(name);
 		check(dec != null, n, "identifier not declared");
 		n.setDec(dec);
+		IDeclaration d = n.getDec();
+		// get det and dec identifer and gey=t slot if that identifier and set n.setslot
+		
+	
+			//count++;
+	if(d instanceof NameDef__ ) {
+		NameDef__ fn = (NameDef__) d;
+		IIdentifier ic = fn.getIdent();
+		System.out.println("Line 550"+ic.getSlot());
+		n.setSlot(ic.getSlot());
+	}
+	else {
+		System.out.println("Line 554"+d);
 		n.setSlot(0);
+	}
+//	else {
+			
+	//}
 		return dec;
 	}
 
