@@ -542,52 +542,35 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 		MethodVisitor mv = ((MethodVisitorLocalVarTable) arg).mv;
 		INameDef lname = n.getLocalDef();
 		String nameLet =  lname.getText();
-		//start 
-		//end
+		int checkSlot = lname.getIdent().getSlot();
+		System.out.println("Line 547"+arg);
 		IExpression e = n.getExpression();
+		
 		Label IFend = new Label();
 		List<LocalVarInfo> localVar = new ArrayList<LocalVarInfo>();
 		String desc =  lname.getType().getDesc();
-		// letDef.getIdent().setSlot(slotLocal++);
-//		localVar.add(new LocalVarInfo(letDef.getIdent().getName(), desc, null, null));
-//		mv.visitCode();
-//		mv.visitVarInsn(Opcodes.ILOAD, letDef.getIdent().getSlot());
 		Label funcStart = new Label();
 		mv.visitLabel(funcStart);
-		//MethodVisitorLocalVarTable context = new MethodVisitorLocalVarTable(mv, localVar);
-		//mv.visitLocalVariable( nameLet , arg, null, range0, range1, slot);
 		CodeGenUtils.genDebugPrint(mv, "");
-		// IExpression e = n.getExpression();
-		if (e != null) { // the return statement has an expression
-			e.visit(this, arg); // generate code to leave value of expression on top of stack.
-			// mv.visitVarInsn(Opcodes.ILOAD, letDef.getIdent().getSlot());
-			Label IFstart = new Label();
-			mv.visitLabel(IFstart);
-			// use type of expression to determine which return instruction to use
-			// IType type = e.getType();
-			// if (type.isBoolean()) {
-			// -----------check below 2 line needed or not ---------
-			// Label funcStart = new Label();
-			// mv.visitLabel(funcStart);
-			// MethodVisitorLocalVarTable context = new MethodVisitorLocalVarTable(mv);
-			// visit block to generate code for statements
+		if (e != null) { 
+			IType type = e.getType();
+			e.visit(this, arg); 
+			if(type.isInt() || type.isBoolean()) {
+				mv.visitVarInsn(ISTORE,checkSlot);
+			}
+			else{
+				mv.visitVarInsn(ASTORE,checkSlot);
+			}
 			n.getBlock().visit(this, arg);
-//			Label funcEnd = new Label();
-//			mv.visitLabel(funcEnd);
 			Label IFe = new Label();
 			mv.visitLabel(IFe);
-			mv.visitLabel(IFend);
-			Label IFendafter = new Label();
-			mv.visitLabel(IFendafter);
-			//addLocals(context, funcStart, IFe);
-			mv.visitEnd();
-			// mv.visitInsn(IRETURN);
-//			} else {
-//				mv.visitInsn(ARETURN);
-//			}
-		} else { // there is no argument, (and we have verified duirng type checking that
-					// function has void return type) so use this return statement.
-			mv.visitInsn(RETURN);
+			mv.visitLocalVariable(lname.getIdent().getName(), desc, null, funcStart, IFe, checkSlot);
+		} else { 
+			
+			n.getBlock().visit(this, arg);
+			Label IFe = new Label();
+			mv.visitLabel(IFe);
+			mv.visitLocalVariable(lname.getIdent().getName(), desc, null, funcStart, IFe, checkSlot);
 		}
 		return null;
 	}
