@@ -331,41 +331,19 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 		String text = n.getName().getDec().getText();
 		String fname =  n.getName().getText();
 		IType type = n.getType();
-		IExpression e = n.getArgs().get(0);
 		MethodVisitor mv = ((MethodVisitorLocalVarTable) arg).mv();
 		String typeDesc = "";
-		switch(text) {
-		case "VAR","VAL"->{
-
-			if(type.isInt()) {
-				//mv.visitVarInsn(ALOAD,0);
-				mv.visitFieldInsn(GETSTATIC, className, n.getName().getName(), "I");
-			}
-			else {
-				if(type.isBoolean()) {
-					//mv.visitVarInsn(ALOAD,0);
-					mv.visitFieldInsn(GETSTATIC, className,n.getName().getName(), "Z");
-				}
-				else {
-					if(type.isString()) {
-						//mv.visitVarInsn(ALOAD,0);
-						mv.visitFieldInsn(GETSTATIC, className, n.getName().getName(), "Ljava/lang/String;");
-						//mv.visitFieldInsn(GETSTATIC, runtimeClass, text, "Ljava/lang/String;");
-					}
-				}
-			}
-			break;
-		}
-		default->{
-			if(type.isBoolean() || type.isInt()) {
-				mv.visitVarInsn(Opcodes.ILOAD, n.getName().getSlot());
-			}
-			else {
-				mv.visitVarInsn(Opcodes.ALOAD, n.getName().getSlot());
-			}
+		System.out.println("Line 336"+n);
+		System.out.println("Line 337"+text);
+		System.out.println("Line 338"+type);
+		if(n.getArgs().size() > 0)
+		{
+			IExpression e = n.getArgs().get(0);
+				e.visit(this, arg);
+			
 		}
 		
-		}
+		
 		//IFunctionDeclaration f =(IFunctionDeclaration) n.getName().getDec(); 
 		//n.visit(this, arg);
 		if (type.isInt()) {
