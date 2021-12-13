@@ -360,9 +360,7 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 				}	
 			
 		s = s+")";
-		
-		//IFunctionDeclaration f =(IFunctionDeclaration) n.getName().getDec(); 
-		//n.visit(this, arg);
+
 		if (type.isInt()) {
 			s= s+"I";
 			mv.visitMethodInsn(INVOKESTATIC, className, fname, s, false);

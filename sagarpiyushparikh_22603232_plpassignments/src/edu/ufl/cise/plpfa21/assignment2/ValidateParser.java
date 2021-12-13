@@ -56,7 +56,7 @@ public class ValidateParser {
 
 				}
 				default -> {
-					break;
+					throw new SyntaxException(this.token.getText(), this.token.getLine(), this.token.getCharPositionInLine());
 				}
 				}
 				consume();
