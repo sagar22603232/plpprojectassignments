@@ -294,7 +294,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		String name = n.getIdent().getName();
 		IType type = (IType) n.getType();
 		IIdentifier i = n.getIdent();
-		System.out.println("Line 297"+count);
+	
 		
 		
 		IType varType = type != null ? (IType) type.visit(this, null) : Type__.undefinedType;
@@ -551,11 +551,9 @@ public class TypeCheckVisitor implements ASTVisitor {
 	if(d instanceof NameDef__ ) {
 		NameDef__ fn = (NameDef__) d;
 		IIdentifier ic = fn.getIdent();
-		System.out.println("Line 550"+ic.getSlot());
 		n.setSlot(ic.getSlot());
 	}
 	else {
-		System.out.println("Line 554"+d);
 		n.setSlot(0);
 	}
 //	else {

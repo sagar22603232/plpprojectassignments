@@ -333,25 +333,51 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 		IType type = n.getType();
 		MethodVisitor mv = ((MethodVisitorLocalVarTable) arg).mv();
 		String typeDesc = "";
-		System.out.println("Line 336"+n);
-		System.out.println("Line 337"+text);
-		System.out.println("Line 338"+type);
-		if(n.getArgs().size() > 0)
-		{
-			IExpression e = n.getArgs().get(0);
-				e.visit(this, arg);
+		String s= "(";
+				if(n.getArgs().size() > 0)
+				{
+					for( IExpression e: n.getArgs()) {
+						e.visit(this, arg);
+						IType etype = e.getType();
+						if(etype.isInt()) {
+							s = s +"I";
+						}
+						else {
+							if(etype.isBoolean()) {
+								s= s+"Z";
+							}
+							else {
+								if(etype.isString()) {
+									s= s+"Ljava/lang/String;";
+								}
+							}
+						}
+						
+					}
+					
+						
+					
+				}	
 			
-		}
-		
+		s = s+")";
 		
 		//IFunctionDeclaration f =(IFunctionDeclaration) n.getName().getDec(); 
 		//n.visit(this, arg);
 		if (type.isInt()) {
-			mv.visitMethodInsn(INVOKESTATIC, className, fname, "(I)I", false);
+			s= s+"I";
+			mv.visitMethodInsn(INVOKESTATIC, className, fname, s, false);
 		} else if (type.isBoolean()) {
-			mv.visitMethodInsn(INVOKESTATIC, className, fname, "(I)Z", false);
+			s= s+"Z";
+			mv.visitMethodInsn(INVOKESTATIC, className, fname, s, false);
 		} else {
-			mv.visitMethodInsn(INVOKESTATIC, className, fname, "(I)V", false);
+			if(type.isString()) {
+				s= s+"Ljava/lang/String;";
+				mv.visitMethodInsn(INVOKESTATIC, className, fname, s, false);
+			}
+			else {
+				s= s+"V";
+				mv.visitMethodInsn(INVOKESTATIC, className, fname, s, false);
+			}
 		}
 		return null;
 	}
@@ -521,7 +547,6 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 		INameDef lname = n.getLocalDef();
 		String nameLet =  lname.getText();
 		int checkSlot = lname.getIdent().getSlot();
-		System.out.println("Line 547"+arg);
 		IExpression e = n.getExpression();
 		
 		Label IFend = new Label();
@@ -755,22 +780,17 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 		IIdentifier i ;
 		IDeclaration d;
 		FunctionDeclaration___ fc;
-		if(leftExpression instanceof FunctionCallExpression__) {
-			FunctionCallExpression__ fn = (FunctionCallExpression__)leftExpression;
-			i= fn.getName();
-			 d= i.getDec();
-			 fc = (FunctionDeclaration___) d;
-		}
-		else {
-			IdentExpression__ t =  (IdentExpression__ )n.getLeft();
-			i = t.getName();
-			 d = i.getDec();
-		}
+		
 		
 		
 		
 		if(rightExpression != null) {
-			rightExpression.visit(this, arg);
+		
+			
+			IdentExpression__ t =  (IdentExpression__ )n.getLeft();
+			i = t.getName();
+			 d = i.getDec();
+			 rightExpression.visit(this, arg);
 			if(d instanceof NameDef__) {
 				if(leftType.isInt() ||leftType.isBoolean()) {
 					mv.visitVarInsn(ISTORE,i.getSlot());
@@ -795,10 +815,10 @@ public class StarterCodeGenVisitor implements ASTVisitor, Opcodes {
 		
 		}
 		else {
-			if(leftType.equals(Type__.voidType)) {
+
 				IFunctionCallExpression fn = (IFunctionCallExpression) leftExpression;
 				fn.visit(this, arg);
-			}
+			
 		}
 		
 			

@@ -1628,12 +1628,12 @@ public class CodeGenTests {
 				  END
                 END
 			   """;
-		assertTimeoutPreemptively(Duration.ofSeconds(2), () -> {
+		
 			byte[] bytecode = compile(input, className, packageName);
         show(CodeGenUtils.bytecodeToString(bytecode));
         boolean result = (boolean) loadClassAndRunMethod(bytecode, className, "f", null);
         assertEquals(false, result);
-	    });
+	    
 	    }
 
     // While loop with function call
